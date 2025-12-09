@@ -1,0 +1,117 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "products": "Productos",
+    "events": "Eventos",
+    "experiments": "Experimentos",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "cart": "Carrito",
+    "admin": "Admin",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión"
+  },
+  "home": {
+    "welcome": "Bienvenido a IOIO",
+    "tagline": "Moda Cyberpunk & Makerspace",
+    "shopNow": "Comprar Ahora",
+    "exploreProducts": "Explorar Productos"
+  },
+  "products": {
+    "title": "Productos",
+    "allProducts": "Todos los Productos",
+    "categories": "Categorías",
+    "addToCart": "Agregar al Carrito",
+    "outOfStock": "Sin Stock",
+    "price": "Precio",
+    "stock": "Stock",
+    "description": "Descripción",
+    "viewDetails": "Ver Detalles"
+  },
+  "cart": {
+    "title": "Carrito de Compras",
+    "empty": "Tu carrito está vacío",
+    "subtotal": "Subtotal",
+    "tax": "Impuestos",
+    "shipping": "Envío",
+    "total": "Total",
+    "checkout": "Finalizar Compra",
+    "continueShopping": "Seguir Comprando",
+    "remove": "Eliminar",
+    "quantity": "Cantidad",
+    "freeShipping": "Envío gratis en compras mayores a $100"
+  },
+  "checkout": {
+    "title": "Finalizar Compra",
+    "shippingAddress": "Dirección de Envío",
+    "paymentMethod": "Método de Pago",
+    "placeOrder": "Realizar Pedido",
+    "orderSummary": "Resumen del Pedido",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "address": "Dirección",
+    "city": "Ciudad",
+    "country": "País",
+    "zipCode": "Código Postal",
+    "mercadopago": "MercadoPago",
+    "bitcoin": "Bitcoin (BTC)",
+    "ethereum": "Ethereum (ETH)"
+  },
+  "events": {
+    "title": "Eventos",
+    "upcoming": "Próximos Eventos",
+    "past": "Eventos Pasados",
+    "location": "Ubicación",
+    "date": "Fecha",
+    "learnMore": "Saber Más"
+  },
+  "experiments": {
+    "title": "Experimentos",
+    "latest": "Últimos Experimentos",
+    "readMore": "Leer Más"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "registerSuccess": "Registro exitoso"
+  },
+  "admin": {
+    "dashboard": "Panel de Administración",
+    "products": "Gestionar Productos",
+    "orders": "Gestionar Pedidos",
+    "users": "Gestionar Usuarios",
+    "banners": "Gestionar Banners",
+    "events": "Gestionar Eventos",
+    "experiments": "Gestionar Experimentos",
+    "addNew": "Agregar Nuevo",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "footer": {
+    "about": "Acerca de IOIO",
+    "contact": "Contáctanos",
+    "followUs": "Síguenos",
+    "allRightsReserved": "Todos los derechos reservados"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "close": "Cerrar",
+    "submit": "Enviar"
+  }
+}
