@@ -1,4 +1,10 @@
 #!/bin/bash
+set -e
+
+# Log everything
+exec > >(tee /var/log/startup-script.log) 2>&1
+
+echo "=== Starting frontend deployment ==="
 
 # Update system
 apt-get update
@@ -12,22 +18,27 @@ systemctl enable docker
 mkdir -p /opt/ioio
 cd /opt/ioio
 
-# Create docker-compose file
-cat > docker-compose.yml <<EOF
-version: '3.8'
+# Clone repository
+echo "=== Cloning repository ==="
+git clone https://github.com/ioiocl/ioio-market-app.git .
 
-services:
-  frontend:
-    image: node:18-alpine
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    ports:
-      - "3000:3000"
-    environment:
-      VITE_API_URL: ${api_url}
-    command: sh -c "npm install && npm run build && npm run preview -- --host --port 3000"
+# Create .env file for frontend build
+cat > frontend/.env <<EOF
+VITE_API_URL=${api_url}
 EOF
+
+# Build and run frontend container
+echo "=== Building frontend Docker image ==="
+cd /opt/ioio/frontend
+docker build -t ioio-frontend .
+
+echo "=== Starting frontend container ==="
+docker run -d \
+  --name ioio-frontend \
+  --restart unless-stopped \
+  -p 3000:3000 \
+  -e VITE_API_URL=${api_url} \
+  ioio-frontend
 
 # Configure Nginx as reverse proxy
 cat > /etc/nginx/sites-available/ioio <<EOF
@@ -46,11 +57,8 @@ server {
 }
 EOF
 
-ln -s /etc/nginx/sites-available/ioio /etc/nginx/sites-enabled/
-rm /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/ioio /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
 systemctl restart nginx
 
-# Start services
-docker-compose up -d
-
-echo "Frontend deployment complete"
+echo "=== Frontend deployment complete ==="

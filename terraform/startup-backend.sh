@@ -1,4 +1,10 @@
 #!/bin/bash
+set -e
+
+# Log everything
+exec > >(tee /var/log/startup-script.log) 2>&1
+
+echo "=== Starting backend deployment ==="
 
 # Update system
 apt-get update
@@ -12,34 +18,33 @@ systemctl enable docker
 mkdir -p /opt/ioio
 cd /opt/ioio
 
-# Clone repository (replace with your repo URL)
-# git clone https://github.com/your-repo/ioio-app.git .
+# Clone repository
+echo "=== Cloning repository ==="
+git clone https://github.com/ioiocl/ioio-market-app.git .
 
-# For now, we'll create a simple docker-compose file
-cat > docker-compose.yml <<EOF
-version: '3.8'
-
-services:
-  backend:
-    image: node:18-alpine
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-    ports:
-      - "5000:5000"
-    environment:
-      NODE_ENV: production
-      PORT: 5000
-      POSTGRES_HOST: ${db_host}
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${db_name}
-      POSTGRES_USER: ${db_user}
-      POSTGRES_PASSWORD: ${db_password}
-      JWT_SECRET: ${jwt_secret}
-    command: sh -c "npm install && npm start"
+# Create .env file for backend
+cat > backend/.env <<EOF
+NODE_ENV=production
+PORT=5000
+POSTGRES_HOST=${db_host}
+POSTGRES_PORT=5432
+POSTGRES_DB=${db_name}
+POSTGRES_USER=${db_user}
+POSTGRES_PASSWORD=${db_password}
+JWT_SECRET=${jwt_secret}
 EOF
 
-# Start services
-docker-compose up -d
+# Build and run backend container
+echo "=== Building backend Docker image ==="
+cd /opt/ioio/backend
+docker build -t ioio-backend .
 
-echo "Backend deployment complete"
+echo "=== Starting backend container ==="
+docker run -d \
+  --name ioio-backend \
+  --restart unless-stopped \
+  -p 5000:5000 \
+  --env-file .env \
+  ioio-backend npm start
+
+echo "=== Backend deployment complete ==="
