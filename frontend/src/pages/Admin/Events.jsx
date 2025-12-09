@@ -11,9 +11,7 @@ function AdminEvents() {
   const [editingEvent, setEditingEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    titleEn: '',
     titleEs: '',
-    descriptionEn: '',
     descriptionEs: '',
     eventDate: '',
     location: '',
@@ -39,9 +37,7 @@ function AdminEvents() {
   const handleEdit = (event) => {
     setEditingEvent(event);
     setFormData({
-      titleEn: event.title_en || event.title,
       titleEs: event.title_es || event.title,
-      descriptionEn: event.description_en || event.description,
       descriptionEs: event.description_es || event.description,
       eventDate: event.event_date ? event.event_date.split('T')[0] : '',
       location: event.location || '',
@@ -82,9 +78,7 @@ function AdminEvents() {
   const handleNew = () => {
     setEditingEvent(null);
     setFormData({
-      titleEn: '',
       titleEs: '',
-      descriptionEn: '',
       descriptionEs: '',
       eventDate: '',
       location: '',
@@ -158,99 +152,82 @@ function AdminEvents() {
       {/* Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="cyber-card rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
+          <div className="cyber-card rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-cyber-gray">
               <h2 className="text-2xl font-bold text-cyber-blue">
-                {editingEvent ? 'Edit Event' : 'New Event'}
+                {editingEvent ? 'Editar Evento' : 'Nuevo Evento'}
               </h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Title (English)</label>
-                <input
-                  type="text"
-                  value={formData.titleEn}
-                  onChange={(e) => setFormData({ ...formData, titleEn: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Title (Spanish)</label>
-                <input
-                  type="text"
-                  value={formData.titleEs}
-                  onChange={(e) => setFormData({ ...formData, titleEs: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Description (English)</label>
-                <RichTextEditor
-                  value={formData.descriptionEn}
-                  onChange={(value) => setFormData({ ...formData, descriptionEn: value })}
-                  placeholder="Enter description in English..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Description (Spanish)</label>
-                <RichTextEditor
-                  value={formData.descriptionEs}
-                  onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
-                  placeholder="Enter description in Spanish..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Event Date</label>
-                  <input
-                    type="date"
-                    value={formData.eventDate}
-                    onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                    className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">Location</label>
+                  <label className="block text-sm font-semibold mb-2">Título</label>
                   <input
                     type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    value={formData.titleEs}
+                    onChange={(e) => setFormData({ ...formData, titleEs: e.target.value })}
                     className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2">Image URL</label>
-                <input
-                  type="text"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Descripción</label>
+                  <RichTextEditor
+                    value={formData.descriptionEs}
+                    onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
+                    placeholder="Ingrese la descripción..."
+                  />
+                </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="mr-2"
-                />
-                <label className="text-sm font-semibold">Active</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Fecha del Evento</label>
+                    <input
+                      type="date"
+                      value={formData.eventDate}
+                      onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+                      className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Ubicación</label>
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">URL de Imagen</label>
+                  <input
+                    type="text"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    className="mr-2"
+                  />
+                  <label className="text-sm font-semibold">Activo</label>
+                </div>
               </div>
             </div>
 
-            <div className="flex space-x-4 mt-6">
+            <div className="flex space-x-4 p-6 border-t border-cyber-gray bg-cyber-dark">
               <button onClick={handleSave} className="cyber-button flex-1">
                 {t('admin.save')}
               </button>

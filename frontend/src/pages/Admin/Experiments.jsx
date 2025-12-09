@@ -11,11 +11,8 @@ function AdminExperiments() {
   const [editingExperiment, setEditingExperiment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    titleEn: '',
     titleEs: '',
-    descriptionEn: '',
     descriptionEs: '',
-    contentEn: '',
     contentEs: '',
     imageUrl: '',
     isActive: true
@@ -39,11 +36,8 @@ function AdminExperiments() {
   const handleEdit = (experiment) => {
     setEditingExperiment(experiment);
     setFormData({
-      titleEn: experiment.title_en || experiment.title,
       titleEs: experiment.title_es || experiment.title,
-      descriptionEn: experiment.description_en || experiment.description,
       descriptionEs: experiment.description_es || experiment.description,
-      contentEn: experiment.content_en || experiment.content || '',
       contentEs: experiment.content_es || experiment.content || '',
       imageUrl: experiment.image_url || experiment.imageUrl || '',
       isActive: experiment.is_active !== false
@@ -82,11 +76,8 @@ function AdminExperiments() {
   const handleNew = () => {
     setEditingExperiment(null);
     setFormData({
-      titleEn: '',
       titleEs: '',
-      descriptionEn: '',
       descriptionEs: '',
-      contentEn: '',
       contentEs: '',
       imageUrl: '',
       isActive: true
@@ -156,95 +147,69 @@ function AdminExperiments() {
       {/* Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="cyber-card rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
+          <div className="cyber-card rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-cyber-gray">
               <h2 className="text-2xl font-bold text-cyber-blue">
-                {editingExperiment ? 'Edit Experiment' : 'New Experiment'}
+                {editingExperiment ? 'Editar Experimento' : 'Nuevo Experimento'}
               </h2>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">Title (English)</label>
-                <input
-                  type="text"
-                  value={formData.titleEn}
-                  onChange={(e) => setFormData({ ...formData, titleEn: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Título</label>
+                  <input
+                    type="text"
+                    value={formData.titleEs}
+                    onChange={(e) => setFormData({ ...formData, titleEs: e.target.value })}
+                    className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2">Title (Spanish)</label>
-                <input
-                  type="text"
-                  value={formData.titleEs}
-                  onChange={(e) => setFormData({ ...formData, titleEs: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Descripción</label>
+                  <RichTextEditor
+                    value={formData.descriptionEs}
+                    onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
+                    placeholder="Ingrese la descripción..."
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2">Description (English)</label>
-                <RichTextEditor
-                  value={formData.descriptionEn}
-                  onChange={(value) => setFormData({ ...formData, descriptionEn: value })}
-                  placeholder="Enter description in English..."
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Contenido</label>
+                  <RichTextEditor
+                    value={formData.contentEs}
+                    onChange={(value) => setFormData({ ...formData, contentEs: value })}
+                    placeholder="Ingrese el contenido completo..."
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2">Description (Spanish)</label>
-                <RichTextEditor
-                  value={formData.descriptionEs}
-                  onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
-                  placeholder="Enter description in Spanish..."
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2">URL de Imagen</label>
+                  <input
+                    type="text"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-semibold mb-2">Content (English)</label>
-                <RichTextEditor
-                  value={formData.contentEn}
-                  onChange={(value) => setFormData({ ...formData, contentEn: value })}
-                  placeholder="Enter full content in English..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Content (Spanish)</label>
-                <RichTextEditor
-                  value={formData.contentEs}
-                  onChange={(value) => setFormData({ ...formData, contentEs: value })}
-                  placeholder="Enter full content in Spanish..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Image URL</label>
-                <input
-                  type="text"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                />
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="mr-2"
-                />
-                <label className="text-sm font-semibold">Active</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    className="mr-2"
+                  />
+                  <label className="text-sm font-semibold">Activo</label>
+                </div>
               </div>
             </div>
 
-            <div className="flex space-x-4 mt-6">
+            <div className="flex space-x-4 p-6 border-t border-cyber-gray bg-cyber-dark">
               <button onClick={handleSave} className="cyber-button flex-1">
                 {t('admin.save')}
               </button>
