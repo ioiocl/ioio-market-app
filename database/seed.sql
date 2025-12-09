@@ -3,8 +3,8 @@
 -- Insert admin user (password: admin123)
 -- Password hash generated with bcrypt, rounds=10
 INSERT INTO users (email, password_hash, first_name, last_name, role) VALUES
-('admin@ioio.com', '$2b$10$rKvVYZ9qGZqGZ9qGZ9qGZuK8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ', 'Admin', 'IOIO', 'admin'),
-('customer@example.com', '$2b$10$rKvVYZ9qGZqGZ9qGZ9qGZuK8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ8vJ', 'John', 'Doe', 'customer');
+('admin@ioio.com', '$2a$10$pU1KkRaMAcftcuzurhA3S.92QhvGkqxAWMTQ5/rylouvZrFwIrar2', 'Admin', 'IOIO', 'admin'),
+('customer@example.com', '$2a$10$pU1KkRaMAcftcuzurhA3S.92QhvGkqxAWMTQ5/rylouvZrFwIrar2', 'John', 'Doe', 'customer');
 
 -- Insert categories
 INSERT INTO categories (name_en, name_es, slug, description_en, description_es) VALUES
