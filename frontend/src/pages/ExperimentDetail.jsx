@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { experimentService } from '../api/services';
+import HtmlContent from '../components/HtmlContent';
 
 function ExperimentDetail() {
   const { id } = useParams();
@@ -33,9 +34,11 @@ function ExperimentDetail() {
         <img src={experiment.imageUrl} alt={experiment.title} className="w-full h-96 object-cover" />
         <div className="p-8">
           <h1 className="text-4xl font-bold mb-4 neon-text">{experiment.title}</h1>
-          <p className="text-xl text-gray-400 mb-6">{experiment.description}</p>
-          <div className="prose prose-invert max-w-none">
-            <p className="text-gray-300 leading-relaxed whitespace-pre-line">{experiment.content}</p>
+          <div className="text-xl text-gray-400 mb-6">
+            <HtmlContent html={experiment.description} />
+          </div>
+          <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+            <HtmlContent html={experiment.content} />
           </div>
         </div>
       </div>

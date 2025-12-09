@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { bannerService, productService, categoryService, eventService, experimentService } from '../api/services';
+import HtmlContent from '../components/HtmlContent';
 
 function Home() {
   const { t } = useTranslation();
@@ -211,7 +212,9 @@ function Home() {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                  <p className="text-gray-400 mb-4 line-clamp-2">{event.description}</p>
+                  <div className="text-gray-400 mb-4 line-clamp-2">
+                    <HtmlContent html={event.description} />
+                  </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-cyber-blue">{event.location}</span>
                     <span className="text-gray-500">
@@ -254,7 +257,9 @@ function Home() {
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2">{experiment.title}</h3>
-                <p className="text-gray-400 line-clamp-3">{experiment.description}</p>
+                <div className="text-gray-400 line-clamp-3">
+                  <HtmlContent html={experiment.description} />
+                </div>
               </div>
             </Link>
           ))}

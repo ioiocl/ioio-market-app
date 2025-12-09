@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { experimentService } from '../../api/services';
+import RichTextEditor from '../../components/RichTextEditor';
 
 function AdminExperiments() {
   const { t } = useTranslation();
@@ -188,41 +189,37 @@ function AdminExperiments() {
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Description (English)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.descriptionEn}
-                  onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
-                  rows="3"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, descriptionEn: value })}
+                  placeholder="Enter description in English..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Description (Spanish)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.descriptionEs}
-                  onChange={(e) => setFormData({ ...formData, descriptionEs: e.target.value })}
-                  rows="3"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
+                  placeholder="Enter description in Spanish..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Content (English)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.contentEn}
-                  onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
-                  rows="5"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, contentEn: value })}
+                  placeholder="Enter full content in English..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Content (Spanish)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.contentEs}
-                  onChange={(e) => setFormData({ ...formData, contentEs: e.target.value })}
-                  rows="5"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, contentEs: value })}
+                  placeholder="Enter full content in Spanish..."
                 />
               </div>
 

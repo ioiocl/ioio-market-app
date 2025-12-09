@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { eventService } from '../../api/services';
+import RichTextEditor from '../../components/RichTextEditor';
 
 function AdminEvents() {
   const { t } = useTranslation();
@@ -190,21 +191,19 @@ function AdminEvents() {
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Description (English)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.descriptionEn}
-                  onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
-                  rows="3"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, descriptionEn: value })}
+                  placeholder="Enter description in English..."
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold mb-2">Description (Spanish)</label>
-                <textarea
+                <RichTextEditor
                   value={formData.descriptionEs}
-                  onChange={(e) => setFormData({ ...formData, descriptionEs: e.target.value })}
-                  rows="3"
-                  className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                  onChange={(value) => setFormData({ ...formData, descriptionEs: value })}
+                  placeholder="Enter description in Spanish..."
                 />
               </div>
 

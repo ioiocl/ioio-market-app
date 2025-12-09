@@ -1,0 +1,118 @@
+.rich-text-editor {
+  background: #1a1a2e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rich-text-editor .ql-toolbar {
+  background: #16213e;
+  border: 1px solid #00d9ff;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.rich-text-editor .ql-container {
+  background: #1a1a2e;
+  border: 1px solid #00d9ff;
+  border-radius: 0 0 8px 8px;
+  min-height: 150px;
+  font-size: 16px;
+}
+
+.rich-text-editor .ql-editor {
+  color: #e0e0e0;
+  min-height: 150px;
+}
+
+.rich-text-editor .ql-editor.ql-blank::before {
+  color: #666;
+  font-style: italic;
+}
+
+.rich-text-editor .ql-toolbar button {
+  color: #e0e0e0;
+}
+
+.rich-text-editor .ql-toolbar button:hover {
+  color: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar button.ql-active {
+  color: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar .ql-stroke {
+  stroke: #e0e0e0;
+}
+
+.rich-text-editor .ql-toolbar button:hover .ql-stroke {
+  stroke: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar button.ql-active .ql-stroke {
+  stroke: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar .ql-fill {
+  fill: #e0e0e0;
+}
+
+.rich-text-editor .ql-toolbar button:hover .ql-fill {
+  fill: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar button.ql-active .ql-fill {
+  fill: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker {
+  color: #e0e0e0;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-label:hover {
+  color: #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-options {
+  background: #16213e;
+  border: 1px solid #00d9ff;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-item {
+  color: #e0e0e0;
+}
+
+.rich-text-editor .ql-toolbar .ql-picker-item:hover {
+  color: #00d9ff;
+}
+
+.rich-text-editor .ql-editor:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+}
+
+.rich-text-editor .ql-container:focus-within {
+  border-color: #ff006e;
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+}
+
+/* Link styling */
+.rich-text-editor .ql-editor a {
+  color: #00d9ff;
+}
+
+/* Header styling in editor */
+.rich-text-editor .ql-editor h1 {
+  color: #00d9ff;
+  font-size: 2em;
+}
+
+.rich-text-editor .ql-editor h2 {
+  color: #ff006e;
+  font-size: 1.5em;
+}
+
+.rich-text-editor .ql-editor h3 {
+  color: #f0e68c;
+  font-size: 1.17em;
+}

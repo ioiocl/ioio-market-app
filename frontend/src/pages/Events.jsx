@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { eventService } from '../api/services';
+import HtmlContent from '../components/HtmlContent';
 
 function Events() {
   const { t } = useTranslation();
@@ -40,7 +41,9 @@ function Events() {
             </div>
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-              <p className="text-gray-400 mb-4 line-clamp-2">{event.description}</p>
+              <div className="text-gray-400 mb-4 line-clamp-2">
+                <HtmlContent html={event.description} />
+              </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-cyber-blue">{event.location}</span>
                 <span className="text-gray-500">{new Date(event.eventDate).toLocaleDateString()}</span>

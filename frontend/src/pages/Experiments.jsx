@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { experimentService } from '../api/services';
+import HtmlContent from '../components/HtmlContent';
 
 function Experiments() {
   const { t } = useTranslation();
@@ -36,7 +37,9 @@ function Experiments() {
             </div>
             <div className="p-6">
               <h3 className="text-xl font-bold mb-2">{experiment.title}</h3>
-              <p className="text-gray-400 line-clamp-3">{experiment.description}</p>
+              <div className="text-gray-400 line-clamp-3">
+                <HtmlContent html={experiment.description} />
+              </div>
             </div>
           </Link>
         ))}

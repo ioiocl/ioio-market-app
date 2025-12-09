@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin } from 'lucide-react';
 import { eventService } from '../api/services';
+import HtmlContent from '../components/HtmlContent';
 
 function EventDetail() {
   const { id } = useParams();
@@ -44,7 +45,9 @@ function EventDetail() {
               <span>{event.location}</span>
             </div>
           </div>
-          <p className="text-lg text-gray-300 leading-relaxed">{event.description}</p>
+          <div className="text-lg text-gray-300 leading-relaxed">
+            <HtmlContent html={event.description} />
+          </div>
         </div>
       </div>
     </div>
