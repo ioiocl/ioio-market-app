@@ -25,9 +25,8 @@ function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link to="/" className="flex items-center">
             <img src="/logo.svg" alt="IOIO" className="h-12 w-12" />
-            <span className="text-2xl font-bold neon-text">IOIO</span>
           </Link>
 
           {/* Desktop Navigation */}
