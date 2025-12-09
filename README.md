@@ -1,4 +1,4 @@
-# IOIO E-Commerce Platform
+# IOIO 1 E-Commerce Platform
 
 A cyberpunk/makerspace styled e-commerce platform for selling clothes and merchandising, with event and experiment showcases.
 
