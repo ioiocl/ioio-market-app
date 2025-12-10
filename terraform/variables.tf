@@ -38,3 +38,9 @@ variable "jwt_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "gcs_bucket_name" {
+  description = "GCS bucket name for image uploads"
+  type        = string
+  default     = "ioio-products"
+}

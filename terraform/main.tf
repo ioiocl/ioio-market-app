@@ -35,11 +35,12 @@ resource "google_compute_instance" "backend" {
   }
 
   metadata_startup_script = templatefile("${path.module}/startup-backend.sh", {
-    db_host     = google_sql_database_instance.postgres.public_ip_address
-    db_name     = google_sql_database.database.name
-    db_user     = google_sql_user.user.name
-    db_password = var.db_password
-    jwt_secret  = var.jwt_secret
+    db_host         = google_sql_database_instance.postgres.public_ip_address
+    db_name         = google_sql_database.database.name
+    db_user         = google_sql_user.user.name
+    db_password     = var.db_password
+    jwt_secret      = var.jwt_secret
+    gcs_bucket_name = var.gcs_bucket_name
   })
 
   tags = ["http-server", "https-server"]
