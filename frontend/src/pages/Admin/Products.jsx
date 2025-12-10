@@ -64,10 +64,17 @@ function AdminProducts() {
 
   const handleSave = async () => {
     try {
+      // Send both English and Spanish fields (use Spanish for both)
+      const dataToSend = {
+        ...formData,
+        nameEn: formData.nameEs,
+        descriptionEn: formData.descriptionEs
+      };
+      
       if (editingProduct) {
-        await productService.update(editingProduct.id, formData);
+        await productService.update(editingProduct.id, dataToSend);
       } else {
-        await productService.create(formData);
+        await productService.create(dataToSend);
       }
       setShowModal(false);
       setEditingProduct(null);
