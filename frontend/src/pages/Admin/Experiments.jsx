@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
-import { experimentService } from '../../api/services';
+import { X, Upload, Loader2 } from 'lucide-react';
+import { experimentService, uploadService } from '../../api/services';
 import RichTextEditor from '../../components/RichTextEditor';
 
 function AdminExperiments() {
@@ -17,6 +17,8 @@ function AdminExperiments() {
     imageUrl: '',
     isActive: true
   });
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     loadExperiments();
@@ -42,15 +44,24 @@ function AdminExperiments() {
       imageUrl: experiment.image_url || experiment.imageUrl || '',
       isActive: experiment.is_active !== false
     });
+    setImagePreview(experiment.image_url || experiment.imageUrl || null);
     setShowModal(true);
   };
 
   const handleSave = async () => {
     try {
+      // Send both English and Spanish fields
+      const dataToSend = {
+        ...formData,
+        titleEn: formData.titleEs,
+        descriptionEn: formData.descriptionEs,
+        contentEn: formData.contentEs
+      };
+      
       if (editingExperiment) {
-        await experimentService.update(editingExperiment.id, formData);
+        await experimentService.update(editingExperiment.id, dataToSend);
       } else {
-        await experimentService.create(formData);
+        await experimentService.create(dataToSend);
       }
       setShowModal(false);
       setEditingExperiment(null);
@@ -82,7 +93,29 @@ function AdminExperiments() {
       imageUrl: '',
       isActive: true
     });
+    setImagePreview(null);
     setShowModal(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
+
+    setUploading(true);
+    try {
+      const res = await uploadService.uploadImage(file, 'experiments');
+      setFormData({ ...formData, imageUrl: res.data.imageUrl });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error subiendo imagen: ' + (error.response?.data?.error?.message || error.message));
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
   };
 
   if (loading) {
@@ -188,13 +221,29 @@ function AdminExperiments() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2">URL de Imagen</label>
-                  <input
-                    type="text"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
-                  />
+                  <label className="block text-sm font-semibold mb-2">Imagen</label>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-cyber-blue text-black rounded cursor-pointer hover:bg-opacity-80 transition-colors">
+                      {uploading ? (
+                        <><Loader2 className="w-5 h-5 animate-spin" /> Subiendo...</>
+                      ) : (
+                        <><Upload className="w-5 h-5" /> Subir Imagen</>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                    </label>
+                    {imagePreview && (
+                      <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded" />
+                    )}
+                  </div>
+                  {formData.imageUrl && (
+                    <p className="text-xs text-gray-400 mt-2 truncate">{formData.imageUrl}</p>
+                  )}
                 </div>
 
                 <div className="flex items-center">
@@ -210,7 +259,7 @@ function AdminExperiments() {
             </div>
 
             <div className="flex space-x-4 p-6 border-t border-cyber-gray bg-cyber-dark">
-              <button onClick={handleSave} className="cyber-button flex-1">
+              <button onClick={handleSave} className="cyber-button flex-1" disabled={uploading}>
                 {t('admin.save')}
               </button>
               <button 
