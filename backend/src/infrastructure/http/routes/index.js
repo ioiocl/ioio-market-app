@@ -19,6 +19,8 @@ const OrderController = require('../controllers/OrderController');
 const CartController = require('../controllers/CartController');
 const CategoryController = require('../controllers/CategoryController');
 const ContentController = require('../controllers/ContentController');
+const UploadController = require('../controllers/UploadController');
+const multer = require('multer');
 
 function setupRoutes(app) {
   const router = express.Router();
@@ -46,6 +48,17 @@ function setupRoutes(app) {
     experimentRepository,
     companyInfoRepository
   );
+  const uploadController = new UploadController();
+
+  // Configure multer for multiple files
+  const uploadMultiple = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype.startsWith('image/')) cb(null, true);
+      else cb(new Error('Only images allowed'), false);
+    }
+  }).array('images', 10);
 
   // Auth routes
   router.post('/auth/register', (req, res) => authController.register(req, res));
@@ -121,6 +134,14 @@ function setupRoutes(app) {
   router.get('/company-info', (req, res) => contentController.getCompanyInfo(req, res));
   router.put('/company-info', authMiddleware, adminMiddleware, (req, res) => 
     contentController.updateCompanyInfo(req, res));
+
+  // Upload routes
+  router.post('/upload', authMiddleware, adminMiddleware, 
+    uploadController.uploadMiddleware, 
+    (req, res) => uploadController.uploadImage(req, res));
+  router.post('/upload/multiple', authMiddleware, adminMiddleware,
+    uploadMultiple,
+    (req, res) => uploadController.uploadMultipleImages(req, res));
 
   // Mount router
   app.use('/api', router);

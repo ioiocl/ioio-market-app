@@ -32,6 +32,7 @@ POSTGRES_DB=${db_name}
 POSTGRES_USER=${db_user}
 POSTGRES_PASSWORD=${db_password}
 JWT_SECRET=${jwt_secret}
+GCS_BUCKET_NAME=${gcs_bucket_name}
 EOF
 
 # Build and run backend container

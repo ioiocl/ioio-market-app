@@ -74,3 +74,23 @@ export const companyInfoService = {
   get: () => apiClient.get('/company-info'),
   update: (companyData) => apiClient.put('/company-info', companyData),
 };
+
+// Upload Services
+export const uploadService = {
+  uploadImage: (file, folder = 'products') => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('folder', folder);
+    return apiClient.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  uploadMultiple: (files, folder = 'products') => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    formData.append('folder', folder);
+    return apiClient.post('/upload/multiple', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  }
+};
