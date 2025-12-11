@@ -34,7 +34,8 @@ function Header() {
             <Link to="/" className="hover:text-cyber-blue transition-colors">
               {t('nav.home')}
             </Link>
-            <Link to="/products" className="hover:text-cyber-blue transition-colors">
+            {/* Hidden for production - Products, Events, Experiments */}
+            {/* <Link to="/products" className="hover:text-cyber-blue transition-colors">
               {t('nav.products')}
             </Link>
             <Link to="/events" className="hover:text-cyber-blue transition-colors">
@@ -42,7 +43,7 @@ function Header() {
             </Link>
             <Link to="/experiments" className="hover:text-cyber-blue transition-colors">
               {t('nav.experiments')}
-            </Link>
+            </Link> */}
             <Link to="/about" className="hover:text-cyber-blue transition-colors">
               {t('nav.about')}
             </Link>
@@ -63,8 +64,8 @@ function Header() {
               <span className="ml-1 text-sm">{i18n.language.toUpperCase()}</span>
             </button>
 
-            {/* Cart */}
-            <Link
+            {/* Cart - Hidden for production */}
+            {/* <Link
               to="/cart"
               className="relative p-2 hover:bg-cyber-gray rounded-lg transition-colors"
             >
@@ -74,7 +75,7 @@ function Header() {
                   {cart.items.length}
                 </span>
               )}
-            </Link>
+            </Link> */}
 
             {/* User Menu */}
             {user ? (
@@ -125,7 +126,8 @@ function Header() {
               >
                 {t('nav.home')}
               </Link>
-              <Link
+              {/* Hidden for production - Products, Events, Experiments */}
+              {/* <Link
                 to="/products"
                 className="hover:text-cyber-blue transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
@@ -145,7 +147,7 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.experiments')}
-              </Link>
+              </Link> */}
               <Link
                 to="/about"
                 className="hover:text-cyber-blue transition-colors"
