@@ -2,8 +2,8 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Build argument for API URL
-ARG VITE_API_URL=http://localhost:5000/api
+# Build argument for API URL (defaults to production)
+ARG VITE_API_URL=https://api.ioio.cl/api
 ENV VITE_API_URL=$VITE_API_URL
 
 # Copy package files

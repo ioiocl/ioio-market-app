@@ -22,22 +22,22 @@ cd /opt/ioio
 echo "=== Cloning repository ==="
 git clone https://github.com/ioiocl/ioio-market-app.git .
 
-# Create .env file for frontend build
+# Create .env file for frontend build with production API URL
 cat > frontend/.env <<EOF
-VITE_API_URL=${api_url}
+VITE_API_URL=https://api.ioio.cl/api
 EOF
 
 # Build and run frontend container
 echo "=== Building frontend Docker image ==="
 cd /opt/ioio/frontend
-docker build -t ioio-frontend .
+docker build --build-arg VITE_API_URL=https://api.ioio.cl/api -t ioio-frontend .
 
 echo "=== Starting frontend container ==="
 docker run -d \
   --name ioio-frontend \
   --restart unless-stopped \
   -p 3000:3000 \
-  -e VITE_API_URL=${api_url} \
+  -e VITE_API_URL=https://api.ioio.cl/api \
   ioio-frontend
 
 # Configure Nginx as reverse proxy
