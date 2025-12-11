@@ -142,49 +142,8 @@ function Home() {
         )}
       </section>
 
-      {/* Hidden for production - Products, Events, Experiments sections */}
-      {/* Products by Category */}
-      {/* <section className="container mx-auto px-4 py-16">
-        {categories.map((category) => (
-          <div key={category.id} className="mb-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold text-cyber-blue">{category.name}</h2>
-              <Link
-                to={`/products?category=${category.id}`}
-                className="flex items-center space-x-2 text-cyber-blue hover:text-cyber-pink transition-colors"
-              >
-                <span>{t('home.exploreProducts')}</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-              {productsByCategory[category.id]?.map((product) => (
-                <Link
-                  key={product.id}
-                  to={`/products/${product.id}`}
-                  className="cyber-card rounded-lg overflow-hidden group"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold mb-2 truncate">{product.name}</h3>
-                    <p className="text-cyber-blue font-bold">${product.price}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section> */}
-
       {/* Events Section */}
-      {/* <section className="bg-cyber-dark py-16">
+      <section className="bg-cyber-dark py-16">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-cyber-pink">{t('events.title')}</h2>
@@ -227,10 +186,10 @@ function Home() {
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* Experiments Section */}
-      {/* <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-cyber-yellow">{t('experiments.title')}</h2>
           <Link
@@ -265,7 +224,7 @@ function Home() {
             </Link>
           ))}
         </div>
-      </section> */}
+      </section>
     </div>
   );
 }
