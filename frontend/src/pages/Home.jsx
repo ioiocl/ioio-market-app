@@ -76,70 +76,32 @@ function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Banner Carousel */}
-      <section className="relative h-[600px] overflow-hidden">
-        {banners.map((banner, index) => (
-          <div
-            key={banner.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentBanner ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <img
-              src={banner.imageUrl}
-              alt={banner.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-cyber-black via-transparent to-transparent">
-              <div className="container mx-auto px-4 h-full flex items-end pb-20">
-                <div className="max-w-2xl animate-slide-up">
-                  <h1 className="text-5xl md:text-7xl font-bold mb-4 neon-text">
-                    {banner.title}
-                  </h1>
-                  {banner.linkUrl && (
-                    <Link
-                      to={banner.linkUrl}
-                      className="cyber-button inline-block"
-                    >
-                      {t('home.shopNow')}
-                    </Link>
-                  )}
-                </div>
-              </div>
+      {/* Chess Tournament Hero Section */}
+      <section className="relative overflow-hidden bg-cyber-dark">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-5xl mx-auto">
+            {/* Tournament Image */}
+            <div className="relative rounded-lg overflow-hidden mb-8 shadow-2xl">
+              <img
+                src="/chess-tournament.png"
+                alt="Cuarto Torneo de Ajedrez IOIO"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+            
+            {/* Tournament Description */}
+            <div className="bg-cyber-black bg-opacity-50 rounded-lg p-8 border border-cyber-blue border-opacity-30">
+              <p className="text-lg md:text-xl leading-relaxed text-gray-200">
+                Este domingo 27 de diciembre desde las 18:00 hrs, te invitamos a vivir una tarde distinta, 
+                llena de estrategia, camaradería y riesgo controlado en el Cuarto Campeonato de Ajedrez IOIO.
+              </p>
+              <p className="text-lg md:text-xl leading-relaxed text-gray-200 mt-4">
+                Ven a poner a prueba tu mente, conocer a otros amantes del ajedrez y disfrutar de un ambiente 
+                creativo y colaborativo en el cowork IOIO, ubicado en Abtao 576, Cerro Concepción, Valparaíso.
+              </p>
             </div>
           </div>
-        ))}
-
-        {/* Banner Controls */}
-        {banners.length > 1 && (
-          <>
-            <button
-              onClick={prevBanner}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-cyber-dark bg-opacity-50 hover:bg-opacity-80 rounded-full transition-all"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button
-              onClick={nextBanner}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-cyber-dark bg-opacity-50 hover:bg-opacity-80 rounded-full transition-all"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-
-            {/* Banner Indicators */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2">
-              {banners.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentBanner(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === currentBanner ? 'bg-cyber-blue w-8' : 'bg-gray-500'
-                  }`}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        </div>
       </section>
 
       {/* Events Section */}
