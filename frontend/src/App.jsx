@@ -13,6 +13,7 @@ import Experiments from './pages/Experiments';
 import ExperimentDetail from './pages/ExperimentDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Menu from './pages/Menu';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/Admin/Dashboard';
@@ -42,6 +43,7 @@ function App() {
             <Route path="/experiments/:id" element={<ExperimentDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/menu" element={<Menu />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<AdminDashboard />} />

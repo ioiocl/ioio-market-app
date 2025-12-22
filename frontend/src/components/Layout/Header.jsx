@@ -47,6 +47,9 @@ function Header() {
             <Link to="/about" className="hover:text-cyber-blue transition-colors">
               {t('nav.about')}
             </Link>
+            <Link to="/menu" className="hover:text-cyber-blue transition-colors">
+              {t('nav.menu')}
+            </Link>
             <Link to="/contact" className="hover:text-cyber-blue transition-colors">
               {t('nav.contact')}
             </Link>
@@ -154,6 +157,13 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.about')}
+              </Link>
+              <Link
+                to="/menu"
+                className="hover:text-cyber-blue transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('nav.menu')}
               </Link>
               <Link
                 to="/contact"
