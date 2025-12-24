@@ -92,7 +92,7 @@ function Home() {
             {/* Tournament Description */}
             <div className="bg-cyber-black bg-opacity-50 rounded-lg p-8 border border-cyber-blue border-opacity-30">
               <p className="text-lg md:text-xl leading-relaxed text-gray-200">
-                Este domingo 27 de diciembre desde las 18:00 hrs, te invitamos a vivir una tarde distinta, 
+                Este sábado 27 de diciembre desde las 18:00 hrs, te invitamos a vivir una tarde distinta,
                 llena de estrategia, camaradería y riesgo controlado en el Cuarto Campeonato de Ajedrez IOIO.
               </p>
               <p className="text-lg md:text-xl leading-relaxed text-gray-200 mt-4">
