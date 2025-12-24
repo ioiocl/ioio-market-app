@@ -99,6 +99,9 @@ function Home() {
                 Ven a poner a prueba tu mente, conocer a otros amantes del ajedrez y disfrutar de un ambiente 
                 creativo y colaborativo en el cowork IOIO, ubicado en Abtao 576, Cerro Concepción, Valparaíso.
               </p>
+               <p className="text-lg md:text-xl leading-relaxed text-gray-200 mt-4">
+                Inscripción $2000, se paga el día del evento. Cualquier duda o consulta al Whatsapp +56 9 64484676.
+               </p>
             </div>
           </div>
         </div>
