@@ -76,120 +76,223 @@ function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Chess Tournament Hero Section */}
-      <section className="relative overflow-hidden bg-cyber-dark">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-5xl mx-auto">
-            {/* Tournament Image */}
-            <div className="relative rounded-lg overflow-hidden mb-8 shadow-2xl">
+      {/* Banner Carousel */}
+      {banners.length > 0 && (
+        <section className="relative h-96 md:h-[500px] overflow-hidden">
+          {banners.map((banner, index) => (
+            <div
+              key={banner.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentBanner ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
               <img
-                src="/chess-tournament.png"
-                alt="Cuarto Torneo de Ajedrez IOIO"
-                className="w-full h-auto object-cover"
+                src={banner.imageUrl}
+                alt={banner.title}
+                className="w-full h-full object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+                <h2 className="text-4xl md:text-6xl font-bold mb-4 neon-text">
+                  {banner.title}
+                </h2>
+                <p className="text-xl md:text-2xl text-gray-300 mb-6">
+                  {banner.description}
+                </p>
+                {banner.link && (
+                  <Link
+                    to={banner.link}
+                    className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors"
+                  >
+                    {t('home.shopNow')}
+                  </Link>
+                )}
+              </div>
             </div>
-            
-            {/* Tournament Description */}
-            <div className="bg-cyber-black bg-opacity-50 rounded-lg p-8 border border-cyber-blue border-opacity-30">
-              <p className="text-lg md:text-xl leading-relaxed text-gray-200">
-                Este sábado 27 de diciembre desde las 18:00 hrs, te invitamos a vivir una tarde distinta,
-                llena de estrategia, camaradería y riesgo controlado en el Cuarto Campeonato de Ajedrez IOIO.
-              </p>
-              <p className="text-lg md:text-xl leading-relaxed text-gray-200 mt-4">
-                Ven a poner a prueba tu mente, conocer a otros amantes del ajedrez y disfrutar de un ambiente 
-                creativo y colaborativo en el cowork IOIO, ubicado en Abtao 576, Cerro Concepción, Valparaíso.
-              </p>
-               <p className="text-lg md:text-xl leading-relaxed text-gray-200 mt-4">
-                Inscripción $2000, se paga el día del evento. Cualquier duda o consulta al Whatsapp +56 9 64484676.
-               </p>
+          ))}
+
+          {/* Navigation Buttons */}
+          {banners.length > 1 && (
+            <>
+              <button
+                onClick={prevBanner}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-cyber-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all"
+                aria-label="Previous banner"
+              >
+                <ChevronLeft className="w-8 h-8 text-cyber-blue" />
+              </button>
+              <button
+                onClick={nextBanner}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-cyber-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all"
+                aria-label="Next banner"
+              >
+                <ChevronRight className="w-8 h-8 text-cyber-blue" />
+              </button>
+
+              {/* Dots Indicator */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                {banners.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentBanner(index)}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      index === currentBanner
+                        ? 'bg-cyber-blue w-8'
+                        : 'bg-gray-500 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to banner ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+      )}
+
+      {/* Products by Category */}
+      {categories.map((category) => {
+        const products = productsByCategory[category.id] || [];
+        if (products.length === 0) return null;
+
+        return (
+          <section key={category.id} className="container mx-auto px-4 py-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-cyber-blue">{category.name}</h2>
+              <Link
+                to={`/products?category=${category.id}`}
+                className="flex items-center space-x-2 text-cyber-blue hover:text-cyber-pink transition-colors"
+              >
+                <span>{t('products.viewDetails')}</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
-          </div>
-        </div>
-      </section>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {products.map((product) => (
+                <Link
+                  key={product.id}
+                  to={`/products/${product.id}`}
+                  className="cyber-card rounded-lg overflow-hidden group"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                        <span className="text-cyber-pink font-bold text-sm">
+                          {t('products.outOfStock')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold mb-2 truncate text-sm">{product.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-cyber-blue font-bold">
+                        ${product.price}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {t('products.stock')}: {product.stock}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        );
+      })}
 
       {/* Events Section */}
-      <section className="bg-cyber-dark py-16">
-        <div className="container mx-auto px-4">
+      {events.length > 0 && (
+        <section className="bg-cyber-dark py-16">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-cyber-pink">{t('events.title')}</h2>
+              <Link
+                to="/events"
+                className="flex items-center space-x-2 text-cyber-pink hover:text-cyber-blue transition-colors"
+              >
+                <span>{t('events.learnMore')}</span>
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {events.map((event) => (
+                <Link
+                  key={event.id}
+                  to={`/events/${event.id}`}
+                  className="cyber-card rounded-lg overflow-hidden group"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={event.imageUrl}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2">{event.title}</h3>
+                    <div className="text-gray-400 mb-4 line-clamp-2">
+                      <HtmlContent html={event.description} />
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-cyber-blue">{event.location}</span>
+                      <span className="text-gray-500">
+                        {new Date(event.eventDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Experiments Section */}
+      {experiments.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-cyber-pink">{t('events.title')}</h2>
+            <h2 className="text-3xl font-bold text-cyber-yellow">{t('experiments.title')}</h2>
             <Link
-              to="/events"
-              className="flex items-center space-x-2 text-cyber-pink hover:text-cyber-blue transition-colors"
+              to="/experiments"
+              className="flex items-center space-x-2 text-cyber-yellow hover:text-cyber-blue transition-colors"
             >
-              <span>{t('events.learnMore')}</span>
+              <span>{t('experiments.readMore')}</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {events.map((event) => (
+            {experiments.map((experiment) => (
               <Link
-                key={event.id}
-                to={`/events/${event.id}`}
+                key={experiment.id}
+                to={`/experiments/${experiment.id}`}
                 className="cyber-card rounded-lg overflow-hidden group"
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={event.imageUrl}
-                    alt={event.title}
+                    src={experiment.imageUrl}
+                    alt={experiment.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-                  <div className="text-gray-400 mb-4 line-clamp-2">
-                    <HtmlContent html={event.description} />
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-cyber-blue">{event.location}</span>
-                    <span className="text-gray-500">
-                      {new Date(event.eventDate).toLocaleDateString()}
-                    </span>
+                  <h3 className="text-xl font-bold mb-2">{experiment.title}</h3>
+                  <div className="text-gray-400 line-clamp-3">
+                    <HtmlContent html={experiment.description} />
                   </div>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Experiments Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-cyber-yellow">{t('experiments.title')}</h2>
-          <Link
-            to="/experiments"
-            className="flex items-center space-x-2 text-cyber-yellow hover:text-cyber-blue transition-colors"
-          >
-            <span>{t('experiments.readMore')}</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {experiments.map((experiment) => (
-            <Link
-              key={experiment.id}
-              to={`/experiments/${experiment.id}`}
-              className="cyber-card rounded-lg overflow-hidden group"
-            >
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={experiment.imageUrl}
-                  alt={experiment.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{experiment.title}</h3>
-                <div className="text-gray-400 line-clamp-3">
-                  <HtmlContent html={experiment.description} />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
