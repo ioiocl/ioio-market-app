@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight, ShoppingCart } from 'lucide-react';
 import { bannerService, productService, categoryService, eventService, experimentService } from '../api/services';
 import HtmlContent from '../components/HtmlContent';
 
@@ -79,6 +79,15 @@ function Home() {
       {/* Banner Carousel */}
       {banners.length > 0 && (
         <section className="relative h-96 md:h-[500px] overflow-hidden">
+          {/* Shopping Cart Icon */}
+          <Link
+            to="/cart"
+            className="absolute top-4 right-4 z-10 p-3 bg-cyber-blue text-cyber-black rounded-full hover:bg-cyber-pink transition-all shadow-lg hover:scale-110"
+            aria-label="Shopping Cart"
+          >
+            <ShoppingCart className="w-6 h-6 md:w-8 md:h-8" />
+          </Link>
+
           {banners.map((banner, index) => (
             <div
               key={banner.id}
