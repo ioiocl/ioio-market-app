@@ -67,8 +67,8 @@ function Header() {
               <span className="ml-1 text-sm">{i18n.language.toUpperCase()}</span>
             </button>
 
-            {/* Cart - Hidden for production */}
-            {/* <Link
+            {/* Cart */}
+            <Link
               to="/cart"
               className="relative p-2 hover:bg-cyber-gray rounded-lg transition-colors"
             >
@@ -78,7 +78,7 @@ function Header() {
                   {cart.items.length}
                 </span>
               )}
-            </Link> */}
+            </Link>
 
             {/* User Menu */}
             {user ? (
