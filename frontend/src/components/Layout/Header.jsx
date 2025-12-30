@@ -34,6 +34,9 @@ function Header() {
             <Link to="/" className="hover:text-cyber-blue transition-colors">
               {t('nav.home')}
             </Link>
+            <Link to="/products?shop=true" className="hover:text-cyber-blue transition-colors">
+              Shop
+            </Link>
             {/* Hidden for production - Products, Events, Experiments */}
             {/* <Link to="/products" className="hover:text-cyber-blue transition-colors">
               {t('nav.products')}
@@ -128,6 +131,13 @@ function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.home')}
+              </Link>
+              <Link
+                to="/products?shop=true"
+                className="hover:text-cyber-blue transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Shop
               </Link>
               {/* Hidden for production - Products, Events, Experiments */}
               {/* <Link
