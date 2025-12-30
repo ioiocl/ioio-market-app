@@ -1,5 +1,5 @@
 const express = require('express');
-const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { authMiddleware, adminMiddleware, optionalAuthMiddleware } = require('../middleware/auth');
 
 // Repositories
 const PostgresUserRepository = require('../../repositories/PostgresUserRepository');
@@ -55,8 +55,8 @@ function setupRoutes(app) {
   router.get('/auth/me', authMiddleware, (req, res) => authController.me(req, res));
 
   // Product routes
-  router.get('/products', (req, res) => productController.getAll(req, res));
-  router.get('/products/:id', (req, res) => productController.getById(req, res));
+  router.get('/products', optionalAuthMiddleware, (req, res) => productController.getAll(req, res));
+  router.get('/products/:id', optionalAuthMiddleware, (req, res) => productController.getById(req, res));
   router.post('/products', authMiddleware, adminMiddleware, (req, res) => 
     productController.create(req, res));
   router.put('/products/:id', authMiddleware, adminMiddleware, (req, res) => 

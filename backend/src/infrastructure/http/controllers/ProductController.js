@@ -24,7 +24,9 @@ class ProductController {
       };
 
       const products = await this.getProductsUseCase.execute(filters);
-      const productsJSON = products.map(p => p.toJSON(language));
+      // Include admin fields if user is authenticated as admin
+      const isAdmin = req.user?.role === 'admin';
+      const productsJSON = products.map(p => p.toJSON(language, isAdmin));
 
       res.json({ products: productsJSON });
     } catch (error) {
@@ -38,7 +40,9 @@ class ProductController {
       const language = req.headers['accept-language']?.startsWith('es') ? 'es' : 'en';
 
       const product = await this.getProductByIdUseCase.execute(id);
-      res.json({ product: product.toJSON(language) });
+      // Include admin fields if user is authenticated as admin
+      const isAdmin = req.user?.role === 'admin';
+      res.json({ product: product.toJSON(language, isAdmin) });
     } catch (error) {
       res.status(404).json({ error: { message: error.message } });
     }
