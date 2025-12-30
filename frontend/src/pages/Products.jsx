@@ -109,11 +109,16 @@ function Products() {
                   className="cyber-card rounded-lg overflow-hidden group"
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
+                    {(() => {
+                      const primaryImage = (product.images && product.images[0]) || product.imageUrl;
+                      return (
+                        <img
+                          src={primaryImage}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      );
+                    })()}
                     {product.stock === 0 && (
                       <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
                         <span className="text-cyber-pink font-bold text-lg">

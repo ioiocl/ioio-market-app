@@ -17,6 +17,7 @@ function AdminProducts() {
     stock: '',
     categoryId: '',
     imageUrl: '',
+    images: [],
     isActive: true
   });
   const [uploading, setUploading] = useState(false);
@@ -49,16 +50,19 @@ function AdminProducts() {
 
   const handleEdit = (product) => {
     setEditingProduct(product);
+    const productImages = product.images || product.images || [];
+    const coverImage = product.image_url || product.imageUrl || productImages[0] || '';
     setFormData({
       nameEs: product.name_es || product.name,
       descriptionEs: product.description_es || product.description,
       price: product.price,
       stock: product.stock,
       categoryId: product.category_id || product.categoryId,
-      imageUrl: product.image_url || product.imageUrl || '',
+      imageUrl: coverImage,
+      images: productImages,
       isActive: product.is_active !== false
     });
-    setImagePreview(product.image_url || product.imageUrl || null);
+    setImagePreview(coverImage || null);
     setShowModal(true);
   };
 
@@ -106,6 +110,7 @@ function AdminProducts() {
       stock: '',
       categoryId: categories[0]?.id || '',
       imageUrl: '',
+      images: [],
       isActive: true
     });
     setImagePreview(null);
@@ -113,26 +118,53 @@ function AdminProducts() {
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    // Show preview
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result);
-    reader.readAsDataURL(file);
-
-    // Upload to GCS
     setUploading(true);
     try {
-      const res = await uploadService.uploadImage(file, 'products');
-      setFormData({ ...formData, imageUrl: res.data.imageUrl });
+      const res = files.length > 1
+        ? await uploadService.uploadMultiple(files, 'products')
+        : await uploadService.uploadImage(files[0], 'products');
+
+      const uploadedUrls = res.data.imageUrls || (res.data.imageUrl ? [res.data.imageUrl] : []);
+      const nextImages = [...formData.images, ...uploadedUrls];
+      const nextCover = formData.imageUrl || uploadedUrls[0] || null;
+
+      setFormData({
+        ...formData,
+        images: nextImages,
+        imageUrl: nextCover
+      });
+      setImagePreview(nextCover);
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Error subiendo imagen: ' + (error.response?.data?.error?.message || error.message));
-      setImagePreview(null);
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleRemoveImage = (url) => {
+    const remaining = formData.images.filter((image) => image !== url);
+    let nextCover = formData.imageUrl;
+    if (url === formData.imageUrl) {
+      nextCover = remaining[0] || '';
+    }
+    setFormData({
+      ...formData,
+      images: remaining,
+      imageUrl: nextCover
+    });
+    setImagePreview(nextCover || null);
+  };
+
+  const handleSetCover = (url) => {
+    setFormData({
+      ...formData,
+      imageUrl: url
+    });
+    setImagePreview(url);
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="text-2xl neon-text loading">{t('common.loading')}</div></div>;
@@ -256,28 +288,58 @@ function AdminProducts() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2">Imagen</label>
-                  <div className="flex items-center gap-4">
+                  <label className="block text-sm font-semibold mb-2">Imágenes</label>
+                  <div className="flex items-center gap-4 flex-wrap">
                     <label className="flex items-center gap-2 px-4 py-2 bg-cyber-blue text-black rounded cursor-pointer hover:bg-opacity-80 transition-colors">
                       {uploading ? (
                         <><Loader2 className="w-5 h-5 animate-spin" /> Subiendo...</>
                       ) : (
-                        <><Upload className="w-5 h-5" /> Subir Imagen</>
+                        <><Upload className="w-5 h-5" /> Subir Imágenes</>
                       )}
                       <input
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleImageUpload}
                         className="hidden"
                         disabled={uploading}
                       />
                     </label>
                     {imagePreview && (
-                      <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded" />
+                      <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded border border-cyber-blue" />
                     )}
                   </div>
-                  {formData.imageUrl && (
-                    <p className="text-xs text-gray-400 mt-2 truncate">{formData.imageUrl}</p>
+                  {formData.images.length > 0 && (
+                    <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
+                      {formData.images.map((image) => (
+                        <div key={image} className={`relative group rounded overflow-hidden border ${formData.imageUrl === image ? 'border-cyber-blue' : 'border-cyber-gray'}`}>
+                          <img src={image} alt="Producto" className="w-full h-24 object-cover" />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-opacity flex flex-col items-center justify-center gap-2 text-xs">
+                            {formData.imageUrl !== image && (
+                              <button
+                                type="button"
+                                onClick={() => handleSetCover(image)}
+                                className="px-2 py-1 bg-cyber-blue text-black rounded hover:bg-cyber-pink"
+                              >
+                                Portada
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(image)}
+                              className="px-2 py-1 bg-cyber-pink text-black rounded hover:bg-cyber-yellow"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
+                          {formData.imageUrl === image && (
+                            <span className="absolute top-1 left-1 bg-cyber-blue text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                              Portada
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
 

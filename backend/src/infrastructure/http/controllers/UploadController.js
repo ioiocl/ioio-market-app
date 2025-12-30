@@ -20,6 +20,7 @@ const upload = multer({
 class UploadController {
   constructor() {
     this.uploadMiddleware = upload.single('image');
+    this.multipleUploadMiddleware = upload.array('images');
   }
 
   /**

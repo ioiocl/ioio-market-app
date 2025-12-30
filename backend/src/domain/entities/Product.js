@@ -22,8 +22,9 @@ class Product {
     this.descriptionEs = descriptionEs;
     this.price = parseFloat(price);
     this.stock = parseInt(stock);
-    this.imageUrl = imageUrl;
-    this.images = images || [];
+    const parsedImages = this._normalizeImages(images);
+    this.images = parsedImages;
+    this.imageUrl = imageUrl || parsedImages[0] || null;
     this.isActive = isActive !== false;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -58,6 +59,27 @@ class Product {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };
+  }
+
+  _normalizeImages(rawImages) {
+    if (!rawImages) {
+      return [];
+    }
+
+    if (Array.isArray(rawImages)) {
+      return rawImages;
+    }
+
+    if (typeof rawImages === 'string') {
+      try {
+        const parsed = JSON.parse(rawImages);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    return [];
   }
 }
 

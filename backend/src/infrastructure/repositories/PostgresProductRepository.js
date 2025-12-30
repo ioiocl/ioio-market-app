@@ -63,6 +63,8 @@ class PostgresProductRepository extends ProductRepository {
   }
 
   async create(productData) {
+    const images = this._normalizeImages(productData.images);
+
     const result = await pool.query(
       `INSERT INTO products (category_id, name_en, name_es, description_en, description_es, 
                             price, stock, image_url, images, is_active)
@@ -76,8 +78,8 @@ class PostgresProductRepository extends ProductRepository {
         productData.descriptionEs,
         productData.price,
         productData.stock || 0,
-        productData.imageUrl,
-        JSON.stringify(productData.images || []),
+        productData.imageUrl || images[0] || null,
+        JSON.stringify(images),
         productData.isActive !== false
       ]
     );
@@ -89,6 +91,9 @@ class PostgresProductRepository extends ProductRepository {
     const fields = [];
     const values = [];
     let paramCount = 1;
+
+    const hasImagesUpdate = productData.images !== undefined;
+    const normalizedImages = hasImagesUpdate ? this._normalizeImages(productData.images) : null;
 
     if (productData.categoryId) {
       fields.push(`category_id = $${paramCount++}`);
@@ -122,9 +127,13 @@ class PostgresProductRepository extends ProductRepository {
       fields.push(`image_url = $${paramCount++}`);
       values.push(productData.imageUrl);
     }
-    if (productData.images) {
+    if (hasImagesUpdate) {
       fields.push(`images = $${paramCount++}`);
-      values.push(JSON.stringify(productData.images));
+      values.push(JSON.stringify(normalizedImages));
+      if (!productData.imageUrl && normalizedImages.length > 0) {
+        fields.push(`image_url = $${paramCount++}`);
+        values.push(normalizedImages[0]);
+      }
     }
     if (productData.isActive !== undefined) {
       fields.push(`is_active = $${paramCount++}`);
@@ -169,11 +178,53 @@ class PostgresProductRepository extends ProductRepository {
       price: row.price,
       stock: row.stock,
       imageUrl: row.image_url,
-      images: row.images || [],
+      images: this._parseImages(row.images),
       isActive: row.is_active,
       createdAt: row.created_at,
       updatedAt: row.updated_at
     });
+  }
+
+  _normalizeImages(rawImages) {
+    if (!rawImages) {
+      return [];
+    }
+
+    if (Array.isArray(rawImages)) {
+      return rawImages.filter(Boolean);
+    }
+
+    if (typeof rawImages === 'string') {
+      try {
+        const parsed = JSON.parse(rawImages);
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [rawImages];
+      } catch (error) {
+        return [rawImages];
+      }
+    }
+
+    return [];
+  }
+
+  _parseImages(dbImages) {
+    if (!dbImages) {
+      return [];
+    }
+
+    if (Array.isArray(dbImages)) {
+      return dbImages;
+    }
+
+    if (typeof dbImages === 'string') {
+      try {
+        const parsed = JSON.parse(dbImages);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    return [];
   }
 }
 

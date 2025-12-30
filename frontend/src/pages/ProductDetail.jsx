@@ -14,6 +14,7 @@ function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     loadProduct();
@@ -22,7 +23,10 @@ function ProductDetail() {
   const loadProduct = async () => {
     try {
       const res = await productService.getById(id);
-      setProduct(res.data.product);
+      const fetchedProduct = res.data.product;
+      setProduct(fetchedProduct);
+      const primaryImage = (fetchedProduct.images && fetchedProduct.images[0]) || fetchedProduct.imageUrl;
+      setSelectedImage(primaryImage || null);
       setLoading(false);
     } catch (error) {
       console.error('Error loading product:', error);
@@ -66,11 +70,34 @@ function ProductDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Product Image */}
         <div className="cyber-card rounded-lg overflow-hidden">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-auto"
-          />
+          <div className="bg-black/30">
+            <img
+              src={selectedImage || product.imageUrl}
+              alt={product.name}
+              className="w-full h-auto object-contain"
+            />
+          </div>
+          {product.images && product.images.length > 0 && (
+            <div className="grid grid-cols-4 gap-3 p-4 bg-cyber-dark">
+              {product.images.map((image) => (
+                <button
+                  key={image}
+                  type="button"
+                  onClick={() => setSelectedImage(image)}
+                  className={`relative rounded overflow-hidden border transition-colors ${
+                    selectedImage === image ? 'border-cyber-blue' : 'border-transparent hover:border-cyber-pink'
+                  }`}
+                >
+                  <img src={image} alt="Producto" className="w-full h-20 object-cover" />
+                  {selectedImage === image && (
+                    <span className="absolute top-1 left-1 bg-cyber-blue text-black text-[10px] font-bold px-2 py-0.5 rounded">
+                      {t('products.cover') || 'Cover'}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
