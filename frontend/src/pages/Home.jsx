@@ -11,6 +11,8 @@ function Home() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [categories, setCategories] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
+  const [shopProducts, setShopProducts] = useState([]);
+  const [shopCategoryIds, setShopCategoryIds] = useState([]);
   const [events, setEvents] = useState([]);
   const [experiments, setExperiments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,13 +31,40 @@ function Home() {
       ]);
 
       setBanners(bannersRes.data.banners);
-      setCategories(categoriesRes.data.categories);
+      const allCategories = categoriesRes.data.categories;
+      
+      // Identify shop categories (Merchandising and Clothes)
+      const shopCategories = allCategories.filter(cat => 
+        cat.name?.toLowerCase().includes('merchandising') ||
+        cat.name?.toLowerCase().includes('clothes') ||
+        cat.name?.toLowerCase().includes('ropa') ||
+        cat.name_en?.toLowerCase().includes('merchandising') ||
+        cat.name_en?.toLowerCase().includes('clothes') ||
+        cat.name_es?.toLowerCase().includes('merchandising') ||
+        cat.name_es?.toLowerCase().includes('ropa')
+      );
+      
+      const shopCatIds = shopCategories.map(c => c.id);
+      setShopCategoryIds(shopCatIds);
+      
+      // Filter out shop categories from regular display
+      const otherCategories = allCategories.filter(cat => !shopCatIds.includes(cat.id));
+      setCategories(otherCategories);
       setEvents(eventsRes.data.events.slice(0, 2));
       setExperiments(experimentsRes.data.experiments.slice(0, 2));
 
-      // Load products for each category
+      // Load shop products (combined from merchandising and clothes, first 6 total)
+      if (shopCatIds.length > 0) {
+        const shopProductsRes = await productService.getAll({ limit: 100 });
+        const filteredShopProducts = shopProductsRes.data.products
+          .filter(p => shopCatIds.includes(p.categoryId || p.category_id))
+          .slice(0, 6);
+        setShopProducts(filteredShopProducts);
+      }
+
+      // Load products for other categories
       const productsData = {};
-      for (const category of categoriesRes.data.categories) {
+      for (const category of otherCategories) {
         const productsRes = await productService.getAll({ categoryId: category.id, limit: 6 });
         productsData[category.id] = productsRes.data.products;
       }
@@ -155,6 +184,63 @@ function Home() {
               </div>
             </>
           )}
+        </section>
+      )}
+
+      {/* Shop Section (Merchandising + Clothes) */}
+      {shopProducts.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-cyber-blue">Shop</h2>
+            <Link
+              to={`/products?shop=true`}
+              className="flex items-center space-x-2 text-cyber-blue hover:text-cyber-pink transition-colors"
+            >
+              <span>{t('products.viewAll') || 'Ver Todo'}</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {shopProducts.map((product) => (
+              <Link
+                key={product.id}
+                to={`/products/${product.id}`}
+                className="cyber-card rounded-lg overflow-hidden group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  {(() => {
+                    const primaryImage = (product.images && product.images[0]) || product.imageUrl;
+                    return (
+                      <img
+                        src={primaryImage}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    );
+                  })()}
+                  {product.stock === 0 && (
+                    <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                      <span className="text-cyber-pink font-bold text-sm">
+                        {t('products.outOfStock')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold mb-2 truncate text-sm">{product.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-cyber-blue font-bold">
+                      ${product.price}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {t('products.stock')}: {product.stock}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 

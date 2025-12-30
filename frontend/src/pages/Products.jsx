@@ -8,21 +8,49 @@ function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [shopCategoryIds, setShopCategoryIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [isShopView, setIsShopView] = useState(searchParams.get('shop') === 'true');
 
   useEffect(() => {
     loadCategories();
   }, []);
 
   useEffect(() => {
+    const shopParam = searchParams.get('shop');
+    setIsShopView(shopParam === 'true');
+    if (shopParam === 'true') {
+      setSelectedCategory('');
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     loadProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, isShopView]);
 
   const loadCategories = async () => {
     try {
       const res = await categoryService.getAll();
-      setCategories(res.data.categories);
+      const allCategories = res.data.categories;
+      
+      // Identify shop categories
+      const shopCategories = allCategories.filter(cat => 
+        cat.name?.toLowerCase().includes('merchandising') ||
+        cat.name?.toLowerCase().includes('clothes') ||
+        cat.name?.toLowerCase().includes('ropa') ||
+        cat.name_en?.toLowerCase().includes('merchandising') ||
+        cat.name_en?.toLowerCase().includes('clothes') ||
+        cat.name_es?.toLowerCase().includes('merchandising') ||
+        cat.name_es?.toLowerCase().includes('ropa')
+      );
+      
+      const shopCatIds = shopCategories.map(c => c.id);
+      setShopCategoryIds(shopCatIds);
+      
+      // Filter out shop categories from sidebar
+      const otherCategories = allCategories.filter(cat => !shopCatIds.includes(cat.id));
+      setCategories(otherCategories);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
@@ -31,9 +59,21 @@ function Products() {
   const loadProducts = async () => {
     try {
       setLoading(true);
-      const params = selectedCategory ? { categoryId: selectedCategory } : {};
-      const res = await productService.getAll(params);
-      setProducts(res.data.products);
+      
+      if (isShopView && shopCategoryIds.length > 0) {
+        // Load all products and filter by shop categories
+        const res = await productService.getAll({});
+        const shopProducts = res.data.products.filter(p => 
+          shopCategoryIds.includes(p.categoryId || p.category_id)
+        );
+        setProducts(shopProducts);
+      } else {
+        // Normal category filtering
+        const params = selectedCategory ? { categoryId: selectedCategory } : {};
+        const res = await productService.getAll(params);
+        setProducts(res.data.products);
+      }
+      
       setLoading(false);
     } catch (error) {
       console.error('Error loading products:', error);
@@ -43,11 +83,18 @@ function Products() {
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
+    setIsShopView(false);
     if (categoryId) {
       setSearchParams({ category: categoryId });
     } else {
       setSearchParams({});
     }
+  };
+
+  const handleShopView = () => {
+    setIsShopView(true);
+    setSelectedCategory('');
+    setSearchParams({ shop: 'true' });
   };
 
   return (
@@ -62,9 +109,21 @@ function Products() {
             <ul className="space-y-2">
               <li>
                 <button
+                  onClick={handleShopView}
+                  className={`w-full text-left px-4 py-2 rounded transition-colors ${
+                    isShopView
+                      ? 'bg-cyber-blue text-cyber-black'
+                      : 'hover:bg-cyber-gray'
+                  }`}
+                >
+                  Shop
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => handleCategoryChange('')}
                   className={`w-full text-left px-4 py-2 rounded transition-colors ${
-                    !selectedCategory
+                    !selectedCategory && !isShopView
                       ? 'bg-cyber-blue text-cyber-black'
                       : 'hover:bg-cyber-gray'
                   }`}
