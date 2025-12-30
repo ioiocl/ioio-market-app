@@ -1,7 +1,7 @@
 const multer = require('multer');
 const { uploadToGCS } = require('../../storage/gcsStorage');
 
-// Configure multer for memory storage
+// Configure multer for memory storage (images)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -17,10 +17,28 @@ const upload = multer({
   },
 });
 
+// Configure multer for PSD files
+const uploadPSD = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit for PSD files
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept PSD files
+    if (file.mimetype === 'image/vnd.adobe.photoshop' || 
+        file.originalname.toLowerCase().endsWith('.psd')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PSD files are allowed'), false);
+    }
+  },
+});
+
 class UploadController {
   constructor() {
     this.uploadMiddleware = upload.single('image');
     this.multipleUploadMiddleware = upload.array('images');
+    this.uploadPSDMiddleware = uploadPSD.single('psd');
   }
 
   /**
@@ -78,6 +96,36 @@ class UploadController {
     } catch (error) {
       console.error('Upload error:', error);
       res.status(500).json({ error: { message: error.message || 'Failed to upload images' } });
+    }
+  }
+
+  /**
+   * Upload a PSD file
+   * POST /api/upload/psd
+   */
+  async uploadPSD(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: { message: 'No PSD file provided' } });
+      }
+
+      const folder = req.body.folder || 'products/psd';
+      
+      const psdUrl = await uploadToGCS(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype,
+        folder
+      );
+
+      res.json({ 
+        success: true,
+        psdUrl,
+        message: 'PSD file uploaded successfully'
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ error: { message: error.message || 'Failed to upload PSD file' } });
     }
   }
 }

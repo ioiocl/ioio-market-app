@@ -92,5 +92,13 @@ export const uploadService = {
     return apiClient.post('/upload/multiple', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+  },
+  uploadPSD: (file, folder = 'products/psd') => {
+    const formData = new FormData();
+    formData.append('psd', file);
+    formData.append('folder', folder);
+    return apiClient.post('/upload/psd', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
 };

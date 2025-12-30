@@ -48,7 +48,8 @@ class ProductController {
     try {
       const productData = req.body;
       const product = await this.createProductUseCase.execute(productData);
-      res.status(201).json({ product: product.toJSON() });
+      // Include admin fields when creating (admin endpoint)
+      res.status(201).json({ product: product.toJSON('en', true) });
     } catch (error) {
       res.status(400).json({ error: { message: error.message } });
     }
@@ -59,7 +60,8 @@ class ProductController {
       const { id } = req.params;
       const productData = req.body;
       const product = await this.productRepository.update(id, productData);
-      res.json({ product: product.toJSON() });
+      // Include admin fields when updating (admin endpoint)
+      res.json({ product: product.toJSON('en', true) });
     } catch (error) {
       res.status(400).json({ error: { message: error.message } });
     }

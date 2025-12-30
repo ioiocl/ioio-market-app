@@ -10,6 +10,7 @@ class Product {
     stock,
     imageUrl,
     images,
+    psdFileUrl,
     isActive,
     createdAt,
     updatedAt
@@ -25,6 +26,7 @@ class Product {
     const parsedImages = this._normalizeImages(images);
     this.images = parsedImages;
     this.imageUrl = imageUrl || parsedImages[0] || null;
+    this.psdFileUrl = psdFileUrl || null;
     this.isActive = isActive !== false;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -45,8 +47,8 @@ class Product {
     this.stock -= quantity;
   }
 
-  toJSON(language = 'en') {
-    return {
+  toJSON(language = 'en', includeAdminFields = false) {
+    const base = {
       id: this.id,
       categoryId: this.categoryId,
       name: language === 'es' ? this.nameEs : this.nameEn,
@@ -59,6 +61,12 @@ class Product {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };
+
+    if (includeAdminFields) {
+      base.psdFileUrl = this.psdFileUrl;
+    }
+
+    return base;
   }
 
   _normalizeImages(rawImages) {

@@ -67,8 +67,8 @@ class PostgresProductRepository extends ProductRepository {
 
     const result = await pool.query(
       `INSERT INTO products (category_id, name_en, name_es, description_en, description_es, 
-                            price, stock, image_url, images, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                            price, stock, image_url, images, psd_file_url, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
       [
         productData.categoryId,
@@ -80,6 +80,7 @@ class PostgresProductRepository extends ProductRepository {
         productData.stock || 0,
         productData.imageUrl || images[0] || null,
         JSON.stringify(images),
+        productData.psdFileUrl || null,
         productData.isActive !== false
       ]
     );
@@ -135,6 +136,10 @@ class PostgresProductRepository extends ProductRepository {
         values.push(normalizedImages[0]);
       }
     }
+    if (productData.psdFileUrl !== undefined) {
+      fields.push(`psd_file_url = $${paramCount++}`);
+      values.push(productData.psdFileUrl);
+    }
     if (productData.isActive !== undefined) {
       fields.push(`is_active = $${paramCount++}`);
       values.push(productData.isActive);
@@ -179,6 +184,7 @@ class PostgresProductRepository extends ProductRepository {
       stock: row.stock,
       imageUrl: row.image_url,
       images: this._parseImages(row.images),
+      psdFileUrl: row.psd_file_url,
       isActive: row.is_active,
       createdAt: row.created_at,
       updatedAt: row.updated_at

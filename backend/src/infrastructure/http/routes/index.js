@@ -131,6 +131,9 @@ function setupRoutes(app) {
   router.post('/upload/multiple', authMiddleware, adminMiddleware,
     uploadController.multipleUploadMiddleware,
     (req, res) => uploadController.uploadMultipleImages(req, res));
+  router.post('/upload/psd', authMiddleware, adminMiddleware,
+    uploadController.uploadPSDMiddleware,
+    (req, res) => uploadController.uploadPSD(req, res));
 
   // Mount router
   app.use('/api', router);

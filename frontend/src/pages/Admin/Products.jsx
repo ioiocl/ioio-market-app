@@ -18,9 +18,11 @@ function AdminProducts() {
     categoryId: '',
     imageUrl: '',
     images: [],
+    psdFileUrl: '',
     isActive: true
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingPSD, setUploadingPSD] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
@@ -60,6 +62,7 @@ function AdminProducts() {
       categoryId: product.category_id || product.categoryId,
       imageUrl: coverImage,
       images: productImages,
+      psdFileUrl: product.psdFileUrl || product.psd_file_url || '',
       isActive: product.is_active !== false
     });
     setImagePreview(coverImage || null);
@@ -111,6 +114,7 @@ function AdminProducts() {
       categoryId: categories[0]?.id || '',
       imageUrl: '',
       images: [],
+      psdFileUrl: '',
       isActive: true
     });
     setImagePreview(null);
@@ -165,6 +169,38 @@ function AdminProducts() {
       imageUrl: url
     });
     setImagePreview(url);
+  };
+
+  const handlePSDUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.psd')) {
+      alert('Solo se permiten archivos PSD');
+      return;
+    }
+
+    setUploadingPSD(true);
+    try {
+      const res = await uploadService.uploadPSD(file, 'products/psd');
+      setFormData({
+        ...formData,
+        psdFileUrl: res.data.psdUrl
+      });
+      alert('Archivo PSD subido exitosamente');
+    } catch (error) {
+      console.error('Error uploading PSD:', error);
+      alert('Error subiendo archivo PSD: ' + (error.response?.data?.error?.message || error.message));
+    } finally {
+      setUploadingPSD(false);
+    }
+  };
+
+  const handleRemovePSD = () => {
+    setFormData({
+      ...formData,
+      psdFileUrl: ''
+    });
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="text-2xl neon-text loading">{t('common.loading')}</div></div>;
@@ -340,6 +376,50 @@ function AdminProducts() {
                         </div>
                       ))}
                     </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Archivo PSD (Solo Admin)</label>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-cyber-yellow text-black rounded cursor-pointer hover:bg-opacity-80 transition-colors">
+                      {uploadingPSD ? (
+                        <><Loader2 className="w-5 h-5 animate-spin" /> Subiendo PSD...</>
+                      ) : (
+                        <><Upload className="w-5 h-5" /> Subir PSD</>
+                      )}
+                      <input
+                        type="file"
+                        accept=".psd"
+                        onChange={handlePSDUpload}
+                        className="hidden"
+                        disabled={uploadingPSD}
+                      />
+                    </label>
+                    {formData.psdFileUrl && (
+                      <div className="flex items-center gap-2 px-3 py-2 bg-cyber-gray rounded">
+                        <span className="text-xs text-gray-300 truncate max-w-[200px]">
+                          {formData.psdFileUrl.split('/').pop()}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleRemovePSD}
+                          className="text-cyber-pink hover:text-cyber-yellow"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {formData.psdFileUrl && (
+                    <a
+                      href={formData.psdFileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-cyber-blue hover:text-cyber-pink mt-2 inline-block"
+                    >
+                      Descargar PSD →
+                    </a>
                   )}
                 </div>
 
