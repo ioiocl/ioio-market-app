@@ -58,6 +58,7 @@ function setupRoutes(app) {
 
   // Product routes
   router.get('/products', optionalAuthMiddleware, (req, res) => productController.getAll(req, res));
+  router.get('/products/:id', optionalAuthMiddleware, (req, res) => productController.getById(req, res));
   router.post('/products', authMiddleware, adminMiddleware, (req, res) => 
     productController.create(req, res));
   router.put('/products/:id', authMiddleware, adminMiddleware, (req, res) => 
