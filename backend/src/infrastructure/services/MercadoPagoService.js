@@ -1,11 +1,13 @@
-const mercadopago = require('mercadopago');
+const { MercadoPagoConfig, Preference, Payment } = require('mercadopago');
 
 class MercadoPagoService {
   constructor() {
-    // Initialize MercadoPago with access token
-    mercadopago.configure({
-      access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
+    // Initialize MercadoPago client with access token (v2 API)
+    this.client = new MercadoPagoConfig({ 
+      accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN 
     });
+    this.preferenceClient = new Preference(this.client);
+    this.paymentClient = new Payment(this.client);
   }
 
   async createPaymentPreference(order) {
@@ -39,12 +41,12 @@ class MercadoPagoService {
         }
       };
 
-      const response = await mercadopago.preferences.create(preference);
+      const response = await this.preferenceClient.create({ body: preference });
       
       return {
-        id: response.body.id,
-        init_point: response.body.init_point, // URL for web
-        sandbox_init_point: response.body.sandbox_init_point // URL for testing
+        id: response.id,
+        init_point: response.init_point, // URL for web
+        sandbox_init_point: response.sandbox_init_point // URL for testing
       };
     } catch (error) {
       console.error('MercadoPago error:', error);
@@ -54,8 +56,8 @@ class MercadoPagoService {
 
   async getPaymentInfo(paymentId) {
     try {
-      const payment = await mercadopago.payment.get(paymentId);
-      return payment.body;
+      const payment = await this.paymentClient.get({ id: paymentId });
+      return payment;
     } catch (error) {
       console.error('Error getting payment info:', error);
       throw new Error(`Failed to get payment info: ${error.message}`);
