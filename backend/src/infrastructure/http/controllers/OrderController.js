@@ -15,9 +15,14 @@ class OrderController {
       const userId = req.user.userId;
       const orderData = req.body;
 
+      console.log('Creating order for user:', userId);
+      console.log('Order data:', JSON.stringify(orderData, null, 2));
+
       const order = await this.createOrderUseCase.execute(userId, orderData);
       res.status(201).json({ order: order.toJSON() });
     } catch (error) {
+      console.error('Error creating order:', error.message);
+      console.error('Stack:', error.stack);
       res.status(400).json({ error: { message: error.message } });
     }
   }
