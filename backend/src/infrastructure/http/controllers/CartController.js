@@ -44,6 +44,8 @@ class CartController {
       const userId = req.user?.userId || null;
       const sessionId = req.headers['x-session-id'] || null;
 
+      console.log('Adding to cart:', { productId, quantity, userId, sessionId });
+
       if (!productId || !quantity) {
         return res.status(400).json({ 
           error: { message: 'Product ID and quantity are required' } 
@@ -57,8 +59,11 @@ class CartController {
         quantity
       );
 
+      console.log('Cart item added successfully:', cartItem.id);
       res.status(201).json({ cartItem });
     } catch (error) {
+      console.error('Error adding to cart:', error.message);
+      console.error('Stack:', error.stack);
       res.status(400).json({ error: { message: error.message } });
     }
   }
