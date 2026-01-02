@@ -20,6 +20,7 @@ const CartController = require('../controllers/CartController');
 const CategoryController = require('../controllers/CategoryController');
 const ContentController = require('../controllers/ContentController');
 const UploadController = require('../controllers/UploadController');
+const WebhookController = require('../controllers/WebhookController');
 
 function setupRoutes(app) {
   const router = express.Router();
@@ -48,15 +49,15 @@ function setupRoutes(app) {
     companyInfoRepository
   );
   const uploadController = new UploadController();
+  const webhookController = new WebhookController(orderRepository);
 
-  // Auth routes
-  router.post('/auth/register', (req, res) => authController.register(req, res));
+  // Health check
+  router.get('/health', (req, res) => res.status(200).send('OK'));
   router.post('/auth/login', (req, res) => authController.login(req, res));
   router.get('/auth/me', authMiddleware, (req, res) => authController.me(req, res));
 
   // Product routes
   router.get('/products', optionalAuthMiddleware, (req, res) => productController.getAll(req, res));
-  router.get('/products/:id', optionalAuthMiddleware, (req, res) => productController.getById(req, res));
   router.post('/products', authMiddleware, adminMiddleware, (req, res) => 
     productController.create(req, res));
   router.put('/products/:id', authMiddleware, adminMiddleware, (req, res) => 
@@ -134,6 +135,9 @@ function setupRoutes(app) {
   router.post('/upload/psd', authMiddleware, adminMiddleware,
     uploadController.uploadPSDMiddleware,
     (req, res) => uploadController.uploadPSD(req, res));
+
+  // Webhook routes (no auth required)
+  router.post('/webhooks/mercadopago', (req, res) => webhookController.handleMercadoPago(req, res));
 
   // Mount router
   app.use('/api', router);

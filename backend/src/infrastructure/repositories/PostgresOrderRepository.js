@@ -198,6 +198,20 @@ class PostgresOrderRepository extends OrderRepository {
     return this._mapToEntity(result.rows[0], itemsResult.rows);
   }
 
+  async updatePaymentDetails(id, paymentDetails) {
+    const result = await pool.query(
+      'UPDATE orders SET payment_details = $1 WHERE id = $2 RETURNING *',
+      [JSON.stringify(paymentDetails), id]
+    );
+
+    const itemsResult = await pool.query(
+      'SELECT * FROM order_items WHERE order_id = $1',
+      [id]
+    );
+
+    return this._mapToEntity(result.rows[0], itemsResult.rows);
+  }
+
   _mapToEntity(orderRow, itemRows) {
     return new Order({
       id: orderRow.id,

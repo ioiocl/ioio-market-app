@@ -1,4 +1,5 @@
 const CreateOrderUseCase = require('../../../application/use-cases/orders/CreateOrderUseCase');
+const MercadoPagoService = require('../../services/MercadoPagoService');
 
 class OrderController {
   constructor(orderRepository, productRepository, cartRepository) {
@@ -8,6 +9,7 @@ class OrderController {
       cartRepository
     );
     this.orderRepository = orderRepository;
+    this.mercadoPagoService = new MercadoPagoService();
   }
 
   async create(req, res) {
@@ -19,7 +21,31 @@ class OrderController {
       console.log('Order data:', JSON.stringify(orderData, null, 2));
 
       const order = await this.createOrderUseCase.execute(userId, orderData);
-      res.status(201).json({ order: order.toJSON() });
+      
+      // If payment method is MercadoPago, create payment preference
+      let paymentUrl = null;
+      if (orderData.paymentMethod === 'mercadopago') {
+        try {
+          const preference = await this.mercadoPagoService.createPaymentPreference(order);
+          paymentUrl = preference.init_point;
+          
+          // Update order with payment details
+          await this.orderRepository.updatePaymentDetails(order.id, {
+            preferenceId: preference.id,
+            paymentUrl: paymentUrl
+          });
+          
+          console.log('MercadoPago payment created:', preference.id);
+        } catch (mpError) {
+          console.error('MercadoPago error:', mpError.message);
+          // Don't fail the order creation, just log the error
+        }
+      }
+      
+      res.status(201).json({ 
+        order: order.toJSON(),
+        paymentUrl: paymentUrl 
+      });
     } catch (error) {
       console.error('Error creating order:', error.message);
       console.error('Stack:', error.stack);

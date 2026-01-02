@@ -56,11 +56,18 @@ function Checkout() {
       };
 
       const res = await orderService.create(orderData);
-      alert('Order placed successfully! Order #' + res.data.order.orderNumber);
       
       // Clear cart
       setCart({ items: [], total: 0 });
-      navigate('/');
+      
+      // If payment URL is returned (MercadoPago), redirect to payment
+      if (res.data.paymentUrl) {
+        window.location.href = res.data.paymentUrl;
+      } else {
+        // For other payment methods (BTC/ETH), show success and redirect
+        alert('Order placed successfully! Order #' + res.data.order.orderNumber);
+        navigate('/');
+      }
     } catch (error) {
       console.error('Error creating order:', error);
       alert('Error placing order: ' + (error.response?.data?.error?.message || error.message));
