@@ -4,8 +4,8 @@ set -e
 cd /opt/ioio/backend
 
 # Fetch MercadoPago credentials
-MERCADOPAGO_TOKEN=$(gcloud secrets versions access latest --secret=mercadopago-secret --project=ioio-finbot 2>/dev/null || echo "")
-MERCADOPAGO_KEY=$(gcloud secrets versions access latest --secret=mercadopago-client-id --project=ioio-finbot 2>/dev/null || echo "")
+MERCADOPAGO_TOKEN=$(gcloud secrets versions access latest --secret=MERCADOPAGO-TOKEN --project=ioio-finbot 2>/dev/null || echo "")
+MERCADOPAGO_KEY=$(gcloud secrets versions access latest --secret=MERCADOPAGO-KEY --project=ioio-finbot 2>/dev/null || echo "")
 
 # Create .env file
 cat > .env <<EOF
