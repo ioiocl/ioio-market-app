@@ -12,6 +12,9 @@ const { setupRoutes } = require('./infrastructure/http/routes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy - we're behind Nginx
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
