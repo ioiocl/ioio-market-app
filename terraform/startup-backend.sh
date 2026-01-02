@@ -22,6 +22,11 @@ cd /opt/ioio
 echo "=== Cloning repository ==="
 git clone https://github.com/ioiocl/ioio-market-app.git .
 
+# Fetch MercadoPago credentials from Secret Manager
+echo "=== Fetching MercadoPago credentials from Secret Manager ==="
+MERCADOPAGO_CLIENT_ID=$(gcloud secrets versions access latest --secret="${mercadopago_secret_id}" --project="${project_id}")
+MERCADOPAGO_SECRET=$(gcloud secrets versions access latest --secret="${mercadopago_secret_key}" --project="${project_id}")
+
 # Create .env file for backend
 cat > backend/.env <<EOF
 NODE_ENV=production
@@ -33,7 +38,9 @@ POSTGRES_USER=${db_user}
 POSTGRES_PASSWORD=${db_password}
 JWT_SECRET=${jwt_secret}
 GCS_BUCKET_NAME=${gcs_bucket_name}
-CORS_ORIGIN=https://ioio.cl
+CORS_ORIGIN=https://ioio.cl,http://ioio.cl,https://www.ioio.cl,http://www.ioio.cl
+MERCADOPAGO_ACCESS_TOKEN=$MERCADOPAGO_SECRET
+MERCADOPAGO_PUBLIC_KEY=$MERCADOPAGO_CLIENT_ID
 EOF
 
 # Build and run backend container

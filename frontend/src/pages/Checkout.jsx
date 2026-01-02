@@ -52,6 +52,7 @@ function Checkout() {
       const orderData = {
         paymentMethod,
         shippingAddress: formData,
+        sessionId: localStorage.getItem('sessionId'), // Include sessionId for cart migration
       };
 
       const res = await orderService.create(orderData);

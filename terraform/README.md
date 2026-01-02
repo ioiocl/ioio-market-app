@@ -8,6 +8,7 @@ This directory contains Terraform configuration to deploy the IOIO e-commerce pl
 2. Terraform installed (>= 1.0)
 3. gcloud CLI installed and configured
 4. Service account with appropriate permissions
+5. MercadoPago credentials stored in Google Secret Manager
 
 ## Setup
 
@@ -35,7 +36,30 @@ This directory contains Terraform configuration to deploy the IOIO e-commerce pl
    export GOOGLE_APPLICATION_CREDENTIALS="path/to/key.json"
    ```
 
-4. **Configure Variables**:
+4. **Store MercadoPago Credentials in Secret Manager**:
+   ```bash
+   # Create secrets for MercadoPago
+   echo -n "YOUR_MERCADOPAGO_CLIENT_ID" | gcloud secrets create MERCADOPAGO-ID \
+     --data-file=- \
+     --replication-policy="automatic"
+   
+   echo -n "YOUR_MERCADOPAGO_SECRET" | gcloud secrets create MERCADOPAGO-SECRET \
+     --data-file=- \
+     --replication-policy="automatic"
+   
+   # Grant access to Compute Engine default service account
+   PROJECT_NUMBER=$(gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)")
+   
+   gcloud secrets add-iam-policy-binding MERCADOPAGO-ID \
+     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+     --role="roles/secretmanager.secretAccessor"
+   
+   gcloud secrets add-iam-policy-binding MERCADOPAGO-SECRET \
+     --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+     --role="roles/secretmanager.secretAccessor"
+   ```
+
+5. **Configure Variables**:
    ```bash
    cp terraform.tfvars.example terraform.tfvars
    # Edit terraform.tfvars with your values

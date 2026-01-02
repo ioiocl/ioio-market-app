@@ -44,3 +44,15 @@ variable "gcs_bucket_name" {
   type        = string
   default     = "ioio-products"
 }
+
+variable "mercadopago_secret_id" {
+  description = "Secret Manager secret name for MercadoPago Client ID"
+  type        = string
+  default     = "MERCADOPAGO-ID"
+}
+
+variable "mercadopago_secret_key" {
+  description = "Secret Manager secret name for MercadoPago Secret"
+  type        = string
+  default     = "MERCADOPAGO-SECRET"
+}

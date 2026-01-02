@@ -86,6 +86,16 @@ class PostgresCartRepository {
   async clearBySessionId(sessionId) {
     await pool.query('DELETE FROM cart_items WHERE session_id = $1', [sessionId]);
   }
+
+  async migrateSessionToUser(sessionId, userId) {
+    // Transfer cart items from sessionId to userId
+    await pool.query(
+      `UPDATE cart_items 
+       SET user_id = $1, session_id = NULL 
+       WHERE session_id = $2`,
+      [userId, sessionId]
+    );
+  }
 }
 
 module.exports = PostgresCartRepository;

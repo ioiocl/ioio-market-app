@@ -8,6 +8,11 @@ class CreateOrderUseCase {
   }
 
   async execute(userId, orderData) {
+    // Migrate session cart to user cart if sessionId is provided
+    if (orderData.sessionId) {
+      await this.cartRepository.migrateSessionToUser(orderData.sessionId, userId);
+    }
+
     // Get cart items
     const cartItems = await this.cartRepository.findByUserId(userId);
     if (!cartItems || cartItems.length === 0) {
