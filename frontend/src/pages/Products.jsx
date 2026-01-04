@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { productService, categoryService } from '../api/services';
 
 function Products() {
@@ -12,6 +13,7 @@ function Products() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [isShopView, setIsShopView] = useState(searchParams.get('shop') === 'true');
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     loadCategories();
@@ -97,11 +99,114 @@ function Products() {
     setSearchParams({ shop: 'true' });
   };
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 neon-text">{t('products.title')}</h1>
+  // Auto-rotate slider
+  useEffect(() => {
+    if (products.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % products.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [products]);
 
-      <div className="flex flex-col md:flex-row gap-8">
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % products.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + products.length) % products.length);
+  };
+
+  return (
+    <div className="min-h-screen">
+      {/* Product Slider */}
+      {products.length > 0 && (
+        <section className="relative h-96 md:h-[500px] overflow-hidden mb-8">
+          {products.map((product, index) => (
+            <div
+              key={product.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {(() => {
+                const primaryImage = (product.images && product.images[0]) || product.imageUrl;
+                return (
+                  <img
+                    src={primaryImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                );
+              })()}
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black via-transparent to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+                <h2 className="text-4xl md:text-6xl font-bold mb-4 neon-text">
+                  {product.name}
+                </h2>
+                <p className="text-xl md:text-2xl text-gray-300 mb-4 line-clamp-2">
+                  {product.description}
+                </p>
+                <div className="flex items-center justify-center gap-6 mb-6">
+                  <span className="text-3xl font-bold text-cyber-blue">
+                    ${product.price}
+                  </span>
+                  <span className="text-lg text-gray-400">
+                    {t('products.stock')}: {product.stock}
+                  </span>
+                </div>
+                <Link
+                  to={`/products/${product.id}`}
+                  className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors"
+                >
+                  {t('products.viewDetails')}
+                </Link>
+              </div>
+            </div>
+          ))}
+
+          {/* Navigation Buttons */}
+          {products.length > 1 && (
+            <>
+              <button
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-cyber-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all z-10"
+                aria-label="Previous product"
+              >
+                <ChevronLeft className="w-8 h-8 text-cyber-blue" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-cyber-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all z-10"
+                aria-label="Next product"
+              >
+                <ChevronRight className="w-8 h-8 text-cyber-blue" />
+              </button>
+
+              {/* Dots Indicator */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+                {products.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      index === currentSlide
+                        ? 'bg-cyber-blue w-8'
+                        : 'bg-gray-500 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to product ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+      )}
+
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold mb-8 neon-text">{t('products.title')}</h1>
+
+        <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar - Categories */}
         <aside className="w-full md:w-64 flex-shrink-0">
           <div className="cyber-card rounded-lg p-6">
@@ -205,6 +310,7 @@ function Products() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

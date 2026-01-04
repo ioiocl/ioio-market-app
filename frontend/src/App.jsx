@@ -22,6 +22,9 @@ import AdminOrders from './pages/Admin/Orders';
 import AdminEvents from './pages/Admin/Events';
 import AdminExperiments from './pages/Admin/Experiments';
 import AdminBanners from './pages/Admin/Banners';
+import OrderSuccess from './pages/OrderSuccess';
+import OrderFailure from './pages/OrderFailure';
+import OrderPending from './pages/OrderPending';
 
 function App() {
   const { i18n } = useTranslation();
@@ -37,6 +40,9 @@ function App() {
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/order-failure" element={<OrderFailure />} />
+            <Route path="/order-pending" element={<OrderPending />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/experiments" element={<Experiments />} />

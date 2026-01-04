@@ -17,17 +17,29 @@ class OrderController {
       const userId = req.user.userId;
       const orderData = req.body;
 
-      console.log('Creating order for user:', userId);
+      console.log('=== ORDER CREATION START ===');
+      console.log('User ID:', userId);
+      console.log('Payment Method:', orderData.paymentMethod);
       console.log('Order data:', JSON.stringify(orderData, null, 2));
 
       const order = await this.createOrderUseCase.execute(userId, orderData);
+      console.log('Order created successfully:', order.id);
       
       // If payment method is MercadoPago, create payment preference
       let paymentUrl = null;
       if (orderData.paymentMethod === 'mercadopago') {
+        console.log('=== MERCADOPAGO PAYMENT CREATION START ===');
+        console.log('Access Token configured:', !!process.env.MERCADOPAGO_ACCESS_TOKEN);
+        console.log('Frontend URL:', process.env.FRONTEND_URL || 'https://ioio.cl');
+        console.log('Backend URL:', process.env.BACKEND_URL || 'https://api.ioio.cl/api');
+        
         try {
           const preference = await this.mercadoPagoService.createPaymentPreference(order);
           paymentUrl = preference.init_point;
+          
+          console.log('MercadoPago preference created successfully:');
+          console.log('- Preference ID:', preference.id);
+          console.log('- Payment URL:', paymentUrl);
           
           // Update order with payment details
           await this.orderRepository.updatePaymentDetails(order.id, {
@@ -35,19 +47,32 @@ class OrderController {
             paymentUrl: paymentUrl
           });
           
-          console.log('MercadoPago payment created:', preference.id);
+          console.log('Order payment details updated');
+          console.log('=== MERCADOPAGO PAYMENT CREATION SUCCESS ===');
         } catch (mpError) {
-          console.error('MercadoPago error:', mpError.message);
-          // Don't fail the order creation, just log the error
+          console.error('=== MERCADOPAGO PAYMENT CREATION FAILED ===');
+          console.error('Error type:', mpError.constructor.name);
+          console.error('Error message:', mpError.message);
+          console.error('Error stack:', mpError.stack);
+          if (mpError.response) {
+            console.error('API Response Status:', mpError.response.status);
+            console.error('API Response Data:', JSON.stringify(mpError.response.data, null, 2));
+          }
+          
+          // CRITICAL: Fail the order creation if MercadoPago fails
+          throw new Error(`MercadoPago payment creation failed: ${mpError.message}`);
         }
       }
       
+      console.log('=== ORDER CREATION SUCCESS ===');
       res.status(201).json({ 
         order: order.toJSON(),
         paymentUrl: paymentUrl 
       });
     } catch (error) {
-      console.error('Error creating order:', error.message);
+      console.error('=== ORDER CREATION FAILED ===');
+      console.error('Error type:', error.constructor.name);
+      console.error('Error message:', error.message);
       console.error('Stack:', error.stack);
       res.status(400).json({ error: { message: error.message } });
     }

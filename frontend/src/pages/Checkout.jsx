@@ -55,22 +55,39 @@ function Checkout() {
         sessionId: localStorage.getItem('sessionId'), // Include sessionId for cart migration
       };
 
+      console.log('=== CHECKOUT SUBMISSION START ===');
+      console.log('Payment Method:', paymentMethod);
+      console.log('Order Data:', orderData);
+
       const res = await orderService.create(orderData);
+      
+      console.log('Order created response:', res.data);
       
       // Clear cart
       setCart({ items: [], total: 0 });
       
       // If payment URL is returned (MercadoPago), redirect to payment
       if (res.data.paymentUrl) {
+        console.log('Redirecting to MercadoPago:', res.data.paymentUrl);
         window.location.href = res.data.paymentUrl;
+      } else if (paymentMethod === 'mercadopago') {
+        // MercadoPago selected but no payment URL - this is an error
+        console.error('MercadoPago selected but no payment URL returned');
+        alert('Payment processing error: No payment URL received. Please contact support with Order #' + res.data.order.orderNumber);
+        setLoading(false);
       } else {
         // For other payment methods (BTC/ETH), show success and redirect
+        console.log('Order placed successfully for crypto payment');
         alert('Order placed successfully! Order #' + res.data.order.orderNumber);
         navigate('/');
       }
     } catch (error) {
-      console.error('Error creating order:', error);
-      alert('Error placing order: ' + (error.response?.data?.error?.message || error.message));
+      console.error('=== CHECKOUT SUBMISSION FAILED ===');
+      console.error('Error:', error);
+      console.error('Response:', error.response?.data);
+      
+      const errorMessage = error.response?.data?.error?.message || error.message;
+      alert('Error placing order: ' + errorMessage);
       setLoading(false);
     }
   };
