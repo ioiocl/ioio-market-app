@@ -144,22 +144,14 @@ function Products() {
                 <h2 className="text-4xl md:text-6xl font-bold mb-4 neon-text">
                   {product.name}
                 </h2>
-                <p className="text-xl md:text-2xl text-gray-300 mb-4 line-clamp-2">
+                <p className="text-xl md:text-2xl text-gray-300 mb-6 line-clamp-3 max-w-4xl mx-auto">
                   {product.description}
                 </p>
-                <div className="flex items-center justify-center gap-6 mb-6">
-                  <span className="text-3xl font-bold text-cyber-blue">
-                    ${product.price}
-                  </span>
-                  <span className="text-lg text-gray-400">
-                    {t('products.stock')}: {product.stock}
-                  </span>
-                </div>
                 <Link
                   to={`/products/${product.id}`}
                   className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors"
                 >
-                  {t('products.viewDetails')}
+                  VER
                 </Link>
               </div>
             </div>
