@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Bitcoin, Copy, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { orderService } from '../api/services';
 
 function CryptoPayment() {
@@ -150,14 +151,23 @@ function CryptoPayment() {
           </div>
         </div>
 
-        {/* QR Code Placeholder */}
+        {/* QR Code */}
         <div className="mb-8 text-center">
-          <div className="inline-block p-8 bg-white rounded-lg">
-            <div className="w-48 h-48 bg-gray-200 flex items-center justify-center">
-              <p className="text-gray-500 text-sm">QR Code</p>
-            </div>
+          <div className="inline-block p-6 bg-white rounded-lg shadow-lg">
+            <QRCodeSVG
+              value={
+                isBitcoin
+                  ? `bitcoin:${paymentInstructions.walletAddress}?amount=${paymentInstructions.amount}`
+                  : `ethereum:${paymentInstructions.walletAddress}?value=${paymentInstructions.amount}`
+              }
+              size={200}
+              level="H"
+              includeMargin={true}
+              bgColor="#ffffff"
+              fgColor="#000000"
+            />
           </div>
-          <p className="text-sm text-gray-400 mt-2">
+          <p className="text-sm text-gray-400 mt-3">
             {t('checkout.scanQRCode')}
           </p>
         </div>
