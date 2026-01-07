@@ -11,6 +11,7 @@ const PostgresBannerRepository = require('../../repositories/PostgresBannerRepos
 const PostgresEventRepository = require('../../repositories/PostgresEventRepository');
 const PostgresExperimentRepository = require('../../repositories/PostgresExperimentRepository');
 const PostgresCompanyInfoRepository = require('../../repositories/PostgresCompanyInfoRepository');
+const CustomPageRepository = require('../../repositories/CustomPageRepository');
 
 // Controllers
 const AuthController = require('../controllers/AuthController');
@@ -21,6 +22,7 @@ const CategoryController = require('../controllers/CategoryController');
 const ContentController = require('../controllers/ContentController');
 const UploadController = require('../controllers/UploadController');
 const WebhookController = require('../controllers/WebhookController');
+const CustomPageController = require('../controllers/CustomPageController');
 
 function setupRoutes(app) {
   const router = express.Router();
@@ -35,6 +37,7 @@ function setupRoutes(app) {
   const eventRepository = new PostgresEventRepository();
   const experimentRepository = new PostgresExperimentRepository();
   const companyInfoRepository = new PostgresCompanyInfoRepository();
+  const customPageRepository = new CustomPageRepository();
 
   // Initialize controllers
   const authController = new AuthController(userRepository);
@@ -50,6 +53,7 @@ function setupRoutes(app) {
   );
   const uploadController = new UploadController();
   const webhookController = new WebhookController(orderRepository);
+  const customPageController = new CustomPageController(customPageRepository);
 
   // Health check
   router.get('/health', (req, res) => res.status(200).send('OK'));
@@ -125,6 +129,17 @@ function setupRoutes(app) {
   router.get('/company-info', (req, res) => contentController.getCompanyInfo(req, res));
   router.put('/company-info', authMiddleware, adminMiddleware, (req, res) => 
     contentController.updateCompanyInfo(req, res));
+
+  // Custom pages routes
+  router.get('/pages', (req, res) => customPageController.getAll(req, res));
+  router.get('/pages/slug/:slug', (req, res) => customPageController.getBySlug(req, res));
+  router.get('/pages/:id', (req, res) => customPageController.getById(req, res));
+  router.post('/pages', authMiddleware, adminMiddleware, (req, res) => 
+    customPageController.create(req, res));
+  router.put('/pages/:id', authMiddleware, adminMiddleware, (req, res) => 
+    customPageController.update(req, res));
+  router.delete('/pages/:id', authMiddleware, adminMiddleware, (req, res) => 
+    customPageController.delete(req, res));
 
   // Upload routes
   router.post('/upload', authMiddleware, adminMiddleware, 

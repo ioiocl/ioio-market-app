@@ -47,6 +47,12 @@ function Header() {
             <Link to="/experiments" className="hover:text-cyber-blue transition-colors">
               {t('nav.experiments')}
             </Link> */}
+            <Link to="/servicios" className="hover:text-cyber-blue transition-colors">
+              Servicios
+            </Link>
+            <Link to="/actividades" className="hover:text-cyber-blue transition-colors">
+              Actividades
+            </Link>
             <Link to="/about" className="hover:text-cyber-blue transition-colors">
               {t('nav.about')}
             </Link>
@@ -161,6 +167,20 @@ function Header() {
               >
                 {t('nav.experiments')}
               </Link> */}
+              <Link
+                to="/servicios"
+                className="hover:text-cyber-blue transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Servicios
+              </Link>
+              <Link
+                to="/actividades"
+                className="hover:text-cyber-blue transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Actividades
+              </Link>
               <Link
                 to="/about"
                 className="hover:text-cyber-blue transition-colors"

@@ -146,6 +146,21 @@ CREATE TABLE company_info (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Custom pages table (for Servicios, Actividades, etc.)
+CREATE TABLE custom_pages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
+    title_es VARCHAR(255) NOT NULL,
+    content_en TEXT,
+    content_es TEXT,
+    image_url VARCHAR(500),
+    images JSONB DEFAULT '[]',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_products_category ON products(category_id);
 CREATE INDEX idx_products_active ON products(is_active);
@@ -190,4 +205,7 @@ CREATE TRIGGER update_cart_items_updated_at BEFORE UPDATE ON cart_items
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_company_info_updated_at BEFORE UPDATE ON company_info
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_custom_pages_updated_at BEFORE UPDATE ON custom_pages
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

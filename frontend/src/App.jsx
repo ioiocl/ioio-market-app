@@ -22,9 +22,12 @@ import AdminOrders from './pages/Admin/Orders';
 import AdminEvents from './pages/Admin/Events';
 import AdminExperiments from './pages/Admin/Experiments';
 import AdminBanners from './pages/Admin/Banners';
+import AdminCustomPages from './pages/Admin/CustomPages';
 import OrderSuccess from './pages/OrderSuccess';
 import OrderFailure from './pages/OrderFailure';
 import OrderPending from './pages/OrderPending';
+import Servicios from './pages/Servicios';
+import Actividades from './pages/Actividades';
 
 function App() {
   const { i18n } = useTranslation();
@@ -47,6 +50,8 @@ function App() {
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/experiments" element={<Experiments />} />
             <Route path="/experiments/:id" element={<ExperimentDetail />} />
+            <Route path="/servicios" element={<Servicios />} />
+            <Route path="/actividades" element={<Actividades />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/menu" element={<Menu />} />
@@ -58,6 +63,7 @@ function App() {
             <Route path="/admin/events" element={<AdminEvents />} />
             <Route path="/admin/experiments" element={<AdminExperiments />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
+            <Route path="/admin/pages" element={<AdminCustomPages />} />
           </Routes>
         </main>
         <Footer />

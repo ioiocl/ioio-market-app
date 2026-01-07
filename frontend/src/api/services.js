@@ -75,6 +75,16 @@ export const companyInfoService = {
   update: (companyData) => apiClient.put('/company-info', companyData),
 };
 
+// Custom Page Services
+export const customPageService = {
+  getAll: () => apiClient.get('/pages'),
+  getBySlug: (slug) => apiClient.get(`/pages/slug/${slug}`),
+  getById: (id) => apiClient.get(`/pages/${id}`),
+  create: (pageData) => apiClient.post('/pages', pageData),
+  update: (id, pageData) => apiClient.put(`/pages/${id}`, pageData),
+  delete: (id) => apiClient.delete(`/pages/${id}`),
+};
+
 // Upload Services
 export const uploadService = {
   uploadImage: (file, folder = 'products') => {
