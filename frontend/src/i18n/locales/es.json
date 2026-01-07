@@ -57,7 +57,14 @@
     "zipCode": "Código Postal",
     "mercadopago": "MercadoPago",
     "bitcoin": "Bitcoin (BTC)",
-    "ethereum": "Ethereum (ETH)"
+    "ethereum": "Ethereum (ETH)",
+    "amountToPay": "Monto a Pagar",
+    "walletAddress": "Dirección de Wallet",
+    "scanQRCode": "Escanea el código QR con tu app de wallet",
+    "paymentSteps": "Instrucciones de Pago",
+    "paymentExpires": "El pago expira",
+    "needHelp": "¿Necesitas ayuda con tu pago?",
+    "contactSupport": "Contacta a soporte"
   },
   "events": {
     "title": "Eventos",
@@ -113,6 +120,12 @@
     "filter": "Filtrar",
     "sort": "Ordenar",
     "close": "Cerrar",
-    "submit": "Enviar"
+    "submit": "Enviar",
+    "copy": "Copiar",
+    "backToHome": "Volver al Inicio"
+  },
+  "order": {
+    "orderNumber": "Número de Orden",
+    "viewMyOrders": "Ver Mis Órdenes"
   }
 }

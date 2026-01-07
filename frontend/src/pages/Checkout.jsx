@@ -75,9 +75,14 @@ function Checkout() {
         console.error('MercadoPago selected but no payment URL returned');
         alert('Payment processing error: No payment URL received. Please contact support with Order #' + res.data.order.orderNumber);
         setLoading(false);
+      } else if (res.data.paymentInstructions) {
+        // For crypto payments (BTC/ETH), redirect to payment instructions page
+        console.log('Redirecting to crypto payment instructions');
+        const instructionsParam = encodeURIComponent(JSON.stringify(res.data.paymentInstructions));
+        navigate(`/crypto-payment?orderId=${res.data.order.id}&instructions=${instructionsParam}`);
       } else {
-        // For other payment methods (BTC/ETH), show success and redirect
-        console.log('Order placed successfully for crypto payment');
+        // Fallback for other payment methods
+        console.log('Order placed successfully');
         alert('Order placed successfully! Order #' + res.data.order.orderNumber);
         navigate('/');
       }

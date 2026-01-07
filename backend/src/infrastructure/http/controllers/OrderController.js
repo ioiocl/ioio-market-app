@@ -1,5 +1,6 @@
 const CreateOrderUseCase = require('../../../application/use-cases/orders/CreateOrderUseCase');
 const MercadoPagoService = require('../../services/MercadoPagoService');
+const BitcoinService = require('../../services/BitcoinService');
 
 class OrderController {
   constructor(orderRepository, productRepository, cartRepository) {
@@ -10,6 +11,7 @@ class OrderController {
     );
     this.orderRepository = orderRepository;
     this.mercadoPagoService = new MercadoPagoService();
+    this.bitcoinService = new BitcoinService();
   }
 
   async create(req, res) {
@@ -25,8 +27,10 @@ class OrderController {
       const order = await this.createOrderUseCase.execute(userId, orderData);
       console.log('Order created successfully:', order.id);
       
-      // If payment method is MercadoPago, create payment preference
       let paymentUrl = null;
+      let paymentInstructions = null;
+
+      // Handle different payment methods
       if (orderData.paymentMethod === 'mercadopago') {
         console.log('=== MERCADOPAGO PAYMENT CREATION START ===');
         console.log('Access Token configured:', !!process.env.MERCADOPAGO_ACCESS_TOKEN);
@@ -62,12 +66,47 @@ class OrderController {
           // CRITICAL: Fail the order creation if MercadoPago fails
           throw new Error(`MercadoPago payment creation failed: ${mpError.message}`);
         }
+      } else if (orderData.paymentMethod === 'btc' || orderData.paymentMethod === 'eth') {
+        // Handle cryptocurrency payments
+        console.log(`=== ${orderData.paymentMethod.toUpperCase()} PAYMENT CREATION START ===`);
+        
+        try {
+          // Check if wallet is configured
+          if (!this.bitcoinService.isConfigured(orderData.paymentMethod)) {
+            throw new Error(`${orderData.paymentMethod.toUpperCase()} wallet address not configured. Please contact support.`);
+          }
+
+          // Generate payment instructions
+          paymentInstructions = await this.bitcoinService.createPaymentInstructions(
+            order,
+            orderData.paymentMethod
+          );
+          
+          console.log('Crypto payment instructions created:');
+          console.log('- Wallet:', paymentInstructions.walletAddress);
+          console.log('- Amount:', paymentInstructions.amount, paymentInstructions.currency);
+          
+          // Update order with crypto payment details
+          await this.orderRepository.updatePaymentDetails(order.id, {
+            cryptoWallet: paymentInstructions.walletAddress,
+            cryptoAmount: paymentInstructions.amount,
+            cryptoCurrency: paymentInstructions.currency,
+            paymentExpiresAt: paymentInstructions.expiresAt
+          });
+          
+          console.log(`=== ${orderData.paymentMethod.toUpperCase()} PAYMENT CREATION SUCCESS ===`);
+        } catch (cryptoError) {
+          console.error(`=== ${orderData.paymentMethod.toUpperCase()} PAYMENT CREATION FAILED ===`);
+          console.error('Error:', cryptoError.message);
+          throw new Error(`Cryptocurrency payment creation failed: ${cryptoError.message}`);
+        }
       }
       
       console.log('=== ORDER CREATION SUCCESS ===');
       res.status(201).json({ 
         order: order.toJSON(),
-        paymentUrl: paymentUrl 
+        paymentUrl: paymentUrl,
+        paymentInstructions: paymentInstructions
       });
     } catch (error) {
       console.error('=== ORDER CREATION FAILED ===');

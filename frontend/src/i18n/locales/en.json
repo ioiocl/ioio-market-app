@@ -57,7 +57,14 @@
     "zipCode": "ZIP Code",
     "mercadopago": "MercadoPago",
     "bitcoin": "Bitcoin (BTC)",
-    "ethereum": "Ethereum (ETH)"
+    "ethereum": "Ethereum (ETH)",
+    "amountToPay": "Amount to Pay",
+    "walletAddress": "Wallet Address",
+    "scanQRCode": "Scan QR code with your wallet app",
+    "paymentSteps": "Payment Instructions",
+    "paymentExpires": "Payment expires",
+    "needHelp": "Need help with your payment?",
+    "contactSupport": "Contact support"
   },
   "events": {
     "title": "Events",
@@ -113,6 +120,12 @@
     "filter": "Filter",
     "sort": "Sort",
     "close": "Close",
-    "submit": "Submit"
+    "submit": "Submit",
+    "copy": "Copy",
+    "backToHome": "Back to Home"
+  },
+  "order": {
+    "orderNumber": "Order Number",
+    "viewMyOrders": "View My Orders"
   }
 }

@@ -65,6 +65,16 @@ This directory contains Terraform configuration to deploy the IOIO e-commerce pl
    # Edit terraform.tfvars with your values
    ```
 
+6. **Configure Cryptocurrency Wallets** (Optional):
+   
+   Edit `terraform.tfvars` and add your Bitcoin/Ethereum wallet addresses:
+   ```hcl
+   btc_wallet_address = "your_bitcoin_address_here"
+   eth_wallet_address = "your_ethereum_address_here"
+   ```
+   
+   See `BITCOIN_GCP_SETUP.md` for detailed instructions.
+
 ## Deployment
 
 1. **Initialize Terraform**:

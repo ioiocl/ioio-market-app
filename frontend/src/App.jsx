@@ -26,6 +26,7 @@ import AdminCustomPages from './pages/Admin/CustomPages';
 import OrderSuccess from './pages/OrderSuccess';
 import OrderFailure from './pages/OrderFailure';
 import OrderPending from './pages/OrderPending';
+import CryptoPayment from './pages/CryptoPayment';
 import Servicios from './pages/Servicios';
 import Actividades from './pages/Actividades';
 
@@ -46,6 +47,7 @@ function App() {
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/order-failure" element={<OrderFailure />} />
             <Route path="/order-pending" element={<OrderPending />} />
+            <Route path="/crypto-payment" element={<CryptoPayment />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
             <Route path="/experiments" element={<Experiments />} />
