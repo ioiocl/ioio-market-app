@@ -1,0 +1,165 @@
+@startuml
+title Diagrama de Secuencia - Proceso de Compra Completo
+
+actor Usuario
+participant "Cart Page" as Cart
+participant "Checkout Page" as Checkout
+participant "orderService" as OrderSvc
+participant "apiClient" as API
+participant "OrderController" as Controller
+participant "CreateOrderUseCase" as UseCase
+participant "CartRepository" as CartRepo
+participant "ProductRepository" as ProdRepo
+participant "OrderRepository" as OrderRepo
+participant "MercadoPagoService" as MP
+database PostgreSQL
+
+== Ver Carrito ==
+Usuario -> Cart: Accede a /cart
+activate Cart
+
+Cart -> OrderSvc: cartService.get()
+activate OrderSvc
+OrderSvc -> API: GET /cart
+activate API
+API -> Controller: GET /cart
+activate Controller
+Controller -> CartRepo: findByUserId(userId)
+activate CartRepo
+CartRepo -> PostgreSQL: SELECT * FROM cart_items\nWHERE user_id = ?
+PostgreSQL --> CartRepo: cart items
+deactivate CartRepo
+Controller --> API: {cart: {items, total}}
+deactivate Controller
+API --> OrderSvc: response
+deactivate API
+OrderSvc --> Cart: cart data
+deactivate OrderSvc
+
+Cart -> Usuario: Muestra items en carrito
+deactivate Cart
+
+== Proceso de Checkout ==
+Usuario -> Checkout: Click "Checkout"
+activate Checkout
+
+Checkout -> Checkout: Verifica autenticación
+alt Usuario no autenticado
+    Checkout -> Usuario: Redirige a /login
+else Usuario autenticado
+    Checkout -> Usuario: Muestra formulario
+end
+
+Usuario -> Checkout: Llena datos de envío
+Usuario -> Checkout: Selecciona método de pago\n(MercadoPago/BTC/ETH)
+Usuario -> Checkout: Click "Confirmar Orden"
+
+Checkout -> OrderSvc: orderService.create(orderData)
+activate OrderSvc
+OrderSvc -> API: POST /orders
+activate API
+API -> Controller: POST /orders\n{paymentMethod, shippingAddress, sessionId}
+activate Controller
+
+Controller -> UseCase: execute(userId, orderData)
+activate UseCase
+
+== Validación y Creación de Orden ==
+UseCase -> CartRepo: migrateSessionToUser(sessionId, userId)
+activate CartRepo
+CartRepo -> PostgreSQL: UPDATE cart_items\nSET user_id = ?\nWHERE session_id = ?
+deactivate CartRepo
+
+UseCase -> CartRepo: findByUserId(userId)
+activate CartRepo
+CartRepo -> PostgreSQL: SELECT * FROM cart_items
+PostgreSQL --> CartRepo: cart items
+deactivate CartRepo
+
+loop Para cada item en carrito
+    UseCase -> ProdRepo: findById(productId)
+    activate ProdRepo
+    ProdRepo -> PostgreSQL: SELECT * FROM products
+    PostgreSQL --> ProdRepo: product
+    deactivate ProdRepo
+    
+    UseCase -> UseCase: Validar stock disponible
+    UseCase -> UseCase: Calcular subtotal
+end
+
+UseCase -> UseCase: Calcular tax (10%)
+UseCase -> UseCase: Calcular shipping ($10 o FREE)
+UseCase -> UseCase: Generar orderNumber
+
+UseCase -> OrderRepo: create(orderData)
+activate OrderRepo
+OrderRepo -> PostgreSQL: BEGIN TRANSACTION
+OrderRepo -> PostgreSQL: INSERT INTO orders
+OrderRepo -> PostgreSQL: INSERT INTO order_items
+OrderRepo -> PostgreSQL: UPDATE products\nSET stock = stock - quantity
+OrderRepo -> PostgreSQL: DELETE FROM cart_items
+OrderRepo -> PostgreSQL: COMMIT
+PostgreSQL --> OrderRepo: Order created
+deactivate OrderRepo
+
+UseCase --> Controller: Order entity
+deactivate UseCase
+
+== Procesamiento de Pago ==
+alt paymentMethod == 'mercadopago'
+    Controller -> MP: createPaymentPreference(order)
+    activate MP
+    MP -> MP: Configura items, payer, back_urls
+    MP -> MP: MercadoPago API call
+    MP --> Controller: {id, init_point, sandbox_init_point}
+    deactivate MP
+    
+    Controller -> OrderRepo: updatePaymentDetails(orderId, {preferenceId, paymentUrl})
+    activate OrderRepo
+    OrderRepo -> PostgreSQL: UPDATE orders\nSET payment_details = ?
+    deactivate OrderRepo
+    
+    Controller --> API: {order, paymentUrl}
+    API --> OrderSvc: response
+    OrderSvc --> Checkout: {order, paymentUrl}
+    
+    Checkout -> Checkout: window.location.href = paymentUrl
+    Checkout -> Usuario: Redirige a MercadoPago
+    deactivate Checkout
+    
+    Usuario -> MP: Realiza pago en MercadoPago
+    MP -> Controller: Webhook notification
+    Controller -> OrderRepo: updatePaymentStatus('paid')
+    
+else paymentMethod == 'btc' || 'eth'
+    Controller -> Controller: bitcoinService.createPaymentInstructions()
+    Controller -> Controller: Genera wallet address, amount, QR code
+    
+    Controller -> OrderRepo: updatePaymentDetails(orderId, {cryptoWallet, cryptoAmount})
+    activate OrderRepo
+    OrderRepo -> PostgreSQL: UPDATE orders\nSET payment_details = ?
+    deactivate OrderRepo
+    
+    Controller --> API: {order, paymentInstructions}
+    API --> OrderSvc: response
+    OrderSvc --> Checkout: {order, paymentInstructions}
+    
+    Checkout -> Usuario: navigate('/crypto-payment')
+    deactivate Checkout
+    
+    Usuario -> CryptoPayment: Ve QR y wallet address
+    Usuario -> Usuario: Realiza transferencia crypto
+end
+
+deactivate Controller
+deactivate API
+deactivate OrderSvc
+
+note over Usuario, PostgreSQL
+  El proceso incluye validación de stock,
+  cálculo de totales, creación transaccional
+  de la orden y procesamiento del pago
+  según el método seleccionado.
+end note
+
+@enduml

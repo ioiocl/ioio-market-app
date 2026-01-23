@@ -1,0 +1,166 @@
+@startuml
+title Diagrama de Arquitectura - Vista General del Sistema IOIO
+
+!define FRONTEND_COLOR #E3F2FD
+!define BACKEND_COLOR #F3E5F5
+!define DB_COLOR #E8F5E9
+!define EXTERNAL_COLOR #FFF9C4
+
+package "Frontend Layer (React SPA)" FRONTEND_COLOR {
+    component [React Router\nv6.20.1] as Router
+    component [Pages & Components] as Pages
+    component [Zustand Store\nv4.4.7] as Store
+    component [API Services Layer] as Services
+    component [Axios Client\nv1.6.2] as Axios
+    component [i18next\nv23.7.8] as i18n
+    component [TailwindCSS\nv3.3.6] as Tailwind
+    component [Lucide Icons] as Icons
+    component [React Quill\n(WYSIWYG)] as Quill
+    component [QR Code Generator] as QR
+}
+
+package "Backend Layer (Node.js/Express)" BACKEND_COLOR {
+    
+    package "Infrastructure Layer" {
+        component [Express Routes] as Routes
+        component [Controllers] as Controllers
+        component [Middlewares\n(Auth, CORS, Rate Limit)] as Middlewares
+        component [PostgreSQL Repositories] as Repositories
+        component [External Services] as ExtServices
+    }
+    
+    package "Application Layer" {
+        component [Use Cases\n(Business Logic)] as UseCases
+    }
+    
+    package "Domain Layer" {
+        component [Entities\n(Order, Product, User)] as Entities
+        component [Ports/Interfaces\n(Repository Contracts)] as Ports
+    }
+}
+
+database "PostgreSQL Database" DB_COLOR {
+    storage [users] as UsersTable
+    storage [products] as ProductsTable
+    storage [categories] as CategoriesTable
+    storage [orders] as OrdersTable
+    storage [order_items] as OrderItemsTable
+    storage [cart_items] as CartTable
+    storage [banners] as BannersTable
+    storage [events] as EventsTable
+    storage [experiments] as ExperimentsTable
+    storage [custom_pages] as PagesTable
+}
+
+cloud "External Services" EXTERNAL_COLOR {
+    component [MercadoPago API\n(Payment Gateway)] as MercadoPago
+    component [Bitcoin Network] as Bitcoin
+    component [Ethereum Network] as Ethereum
+}
+
+cloud "Infrastructure" {
+    component [Nginx\n(Reverse Proxy)] as Nginx
+    component [Vite Build\n(Production)] as Vite
+    storage [File Storage\n(Images/Uploads)] as FileStorage
+}
+
+' Frontend Internal Relationships
+Pages --> Router
+Pages --> Store
+Pages --> Services
+Pages --> i18n
+Services --> Axios
+Pages --> Tailwind
+Pages --> Icons
+Pages --> Quill
+Pages --> QR
+
+' Frontend to Backend
+Axios --> Nginx : HTTPS/REST API
+Nginx --> Routes : Proxy
+
+' Backend Internal Relationships
+Routes --> Middlewares
+Middlewares --> Controllers
+Controllers --> UseCases
+Controllers --> ExtServices
+UseCases --> Ports
+Ports <|.. Repositories : implements
+Repositories --> Entities
+UseCases --> Entities
+
+' Backend to Database
+Repositories --> UsersTable
+Repositories --> ProductsTable
+Repositories --> CategoriesTable
+Repositories --> OrdersTable
+Repositories --> OrderItemsTable
+Repositories --> CartTable
+Repositories --> BannersTable
+Repositories --> EventsTable
+Repositories --> ExperimentsTable
+Repositories --> PagesTable
+
+' Backend to External Services
+ExtServices --> MercadoPago : HTTPS/API
+ExtServices --> Bitcoin : RPC
+ExtServices --> Ethereum : RPC
+
+' File Storage
+Controllers --> FileStorage : Upload/Serve
+Pages --> FileStorage : Load images
+
+note right of Axios
+  **Interceptors:**
+  - Request: Add auth token, language, session
+  - Response: Handle 401 errors globally
+end note
+
+note right of Middlewares
+  **Security & Auth:**
+  - helmet (security headers)
+  - cors (cross-origin)
+  - rate-limit (200 req/min)
+  - JWT authentication
+  - Role-based authorization
+end note
+
+note right of Store
+  **Global State:**
+  - User authentication
+  - Shopping cart
+  - Language preference
+  
+  Persisted in localStorage
+end note
+
+note bottom of UseCases
+  **Clean Architecture:**
+  - CreateOrderUseCase
+  - GetOrdersUseCase
+  - UpdateOrderStatusUseCase
+  
+  Business logic isolated
+  from infrastructure
+end note
+
+note bottom of Repositories
+  **Repository Pattern:**
+  - PostgresOrderRepository
+  - PostgresProductRepository
+  - PostgresUserRepository
+  - PostgresCartRepository
+  
+  Abstracts data persistence
+end note
+
+note right of MercadoPago
+  **Payment Integration:**
+  - Create payment preference
+  - Process webhooks
+  - Handle payment status
+  
+  Supports Chilean Peso (CLP)
+end note
+
+@enduml

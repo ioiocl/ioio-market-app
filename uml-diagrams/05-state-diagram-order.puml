@@ -1,0 +1,100 @@
+@startuml
+title Diagrama de Estados - Ciclo de Vida de una Orden
+
+[*] --> Pending : Orden creada\ncreatOrderUseCase.execute()
+
+state Pending {
+    state "Esperando Pago" as WaitingPayment
+    state "Pago Iniciado" as PaymentInitiated
+    
+    [*] --> WaitingPayment
+    WaitingPayment --> PaymentInitiated : Usuario inicia pago
+}
+
+state Processing {
+    state "Validando Pago" as ValidatingPayment
+    state "Preparando Envío" as PreparingShipment
+    
+    [*] --> ValidatingPayment
+    ValidatingPayment --> PreparingShipment : Pago confirmado
+}
+
+state Approved {
+    state "Lista para Envío" as ReadyToShip
+    state "En Proceso de Empaque" as Packing
+    
+    [*] --> ReadyToShip
+    ReadyToShip --> Packing : Admin procesa
+}
+
+Pending --> Processing : Pago confirmado\nWebhook/Manual
+Pending --> Cancelled : Usuario cancela\ncancel()
+Pending --> Rejected : Admin rechaza\nupdateStatus('rejected')
+
+Processing --> Approved : Admin aprueba\nupdateStatus('approved')
+Processing --> Cancelled : Error en procesamiento\nError de stock/pago
+
+Approved --> Shipped : Orden enviada\nupdateStatus('shipped')
+
+Shipped --> Delivered : Orden entregada\nupdateStatus('delivered')
+
+Delivered --> [*]
+Cancelled --> [*]
+Rejected --> [*]
+
+note right of Pending
+  Estado inicial
+  paymentStatus: 'pending'
+  
+  Métodos de pago:
+  - MercadoPago
+  - Bitcoin
+  - Ethereum
+end note
+
+note right of Processing
+  paymentStatus: 'paid'
+  
+  Pago confirmado,
+  procesando orden
+  
+  Validaciones:
+  - Stock disponible
+  - Datos correctos
+end note
+
+note right of Approved
+  Estado final positivo
+  
+  Orden aprobada por admin
+  Lista para envío
+  
+  canBeCancelled() = false
+end note
+
+note bottom of Cancelled
+  Estados finales
+  
+  No se pueden modificar
+  Stock devuelto si aplicable
+end note
+
+note left of Shipped
+  Orden en tránsito
+  
+  Tracking disponible
+  Cliente notificado
+end note
+
+note as N1
+  Transiciones automáticas:
+  - Pending → Processing (Webhook de pago)
+  
+  Transiciones manuales (Admin):
+  - Pending → Rejected
+  - Processing → Approved
+  - Approved → Shipped
+  - Shipped → Delivered
+end note
+
+@enduml

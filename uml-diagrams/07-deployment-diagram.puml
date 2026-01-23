@@ -1,0 +1,194 @@
+@startuml
+title Diagrama de Despliegue - Infraestructura IOIO
+
+!define CLIENT_COLOR #E3F2FD
+!define SERVER_COLOR #F3E5F5
+!define DB_COLOR #E8F5E9
+!define CLOUD_COLOR #FFF9C4
+
+node "Cliente (Browser)" <<device>> CLIENT_COLOR {
+    artifact "React Application" {
+        component [HTML/CSS/JS Bundle]
+        component [TailwindCSS Styles]
+        component [React Components]
+        component [Zustand Store]
+    }
+    
+    artifact "Build Tool" {
+        component [Vite v5.0.8]
+    }
+}
+
+node "Servidor Web" <<web server>> SERVER_COLOR {
+    component [Nginx] {
+        [Reverse Proxy]
+        [Static File Server]
+        [SSL/TLS Termination]
+    }
+}
+
+node "Servidor de Aplicación" <<application server>> SERVER_COLOR {
+    component [Node.js Runtime] {
+        [Express.js v4.x]
+        [API REST Endpoints]
+        [Middleware Stack]
+    }
+    
+    artifact "Backend Application" {
+        [Controllers]
+        [Use Cases]
+        [Repositories]
+        [Services]
+    }
+    
+    folder "Uploads Directory" {
+        file [Product Images]
+        file [Banner Images]
+        file [Event Images]
+    }
+}
+
+node "Servidor de Base de Datos" <<database server>> DB_COLOR {
+    database "PostgreSQL" {
+        [users]
+        [products]
+        [orders]
+        [order_items]
+        [cart_items]
+        [categories]
+        [banners]
+        [events]
+        [experiments]
+        [custom_pages]
+    }
+    
+    component [Connection Pool] {
+        [pg Pool Manager]
+    }
+}
+
+cloud "CDN / File Storage" CLOUD_COLOR {
+    storage [Static Assets]
+    storage [Product Images]
+    storage [Media Files]
+}
+
+cloud "Payment Services" CLOUD_COLOR {
+    component [MercadoPago API] {
+        [Payment Gateway]
+        [Webhook Receiver]
+    }
+}
+
+cloud "Blockchain Networks" CLOUD_COLOR {
+    component [Bitcoin Network] {
+        [BTC Wallet]
+        [Transaction Monitor]
+    }
+    
+    component [Ethereum Network] {
+        [ETH Wallet]
+        [Transaction Monitor]
+    }
+}
+
+cloud "Infrastructure as Code" {
+    component [Terraform] {
+        [AWS/Cloud Provider]
+        [Infrastructure Config]
+    }
+}
+
+' Client to Web Server
+[React Application] --> [Nginx] : HTTPS (443)\nHTTP/2
+
+' Web Server to App Server
+[Nginx] --> [Express.js v4.x] : HTTP (5000)\nReverse Proxy
+
+' Web Server to CDN
+[Nginx] --> [Static Assets] : HTTPS\nStatic Files
+
+' App Server to Database
+[Express.js v4.x] --> [Connection Pool] : TCP (5432)\nPostgreSQL Protocol
+[Connection Pool] --> [PostgreSQL]
+
+' App Server to File Storage
+[Backend Application] --> [Uploads Directory] : File I/O
+[Nginx] --> [Uploads Directory] : Serve /uploads
+
+' App Server to External Services
+[Backend Application] --> [MercadoPago API] : HTTPS\nREST API
+[Backend Application] --> [Bitcoin Network] : RPC\nJSON-RPC
+[Backend Application] --> [Ethereum Network] : RPC\nJSON-RPC
+
+' Infrastructure
+[Terraform] ..> [Servidor Web] : provisions
+[Terraform] ..> [Servidor de Aplicación] : provisions
+[Terraform] ..> [Servidor de Base de Datos] : provisions
+
+note right of [Nginx]
+  **Configuration:**
+  - Port: 80, 443
+  - SSL/TLS enabled
+  - Gzip compression
+  - Rate limiting
+  - CORS headers
+  
+  **Routes:**
+  - / → React SPA
+  - /api → Backend proxy
+  - /uploads → Static files
+end note
+
+note right of [Express.js v4.x]
+  **Configuration:**
+  - Port: 5000
+  - Environment: production
+  - Trust proxy: enabled
+  
+  **Middleware:**
+  - helmet (security)
+  - cors
+  - rate-limit (200/min)
+  - body-parser
+  - JWT authentication
+end note
+
+note right of [PostgreSQL]
+  **Configuration:**
+  - Port: 5432
+  - Version: 14+
+  - Connection pool: 20 max
+  
+  **Features:**
+  - Transactions (ACID)
+  - Foreign keys
+  - Indexes on key columns
+  - JSON/JSONB support
+end note
+
+note bottom of [MercadoPago API]
+  **Integration:**
+  - Chilean Peso (CLP)
+  - Webhook notifications
+  - Payment preferences
+  - 12 installments support
+end note
+
+note as DeploymentNote
+  **Deployment Process:**
+  1. Frontend: Vite build → Static files
+  2. Backend: Node.js process (PM2/systemd)
+  3. Database: PostgreSQL migrations
+  4. Infrastructure: Terraform apply
+  
+  **Environment Variables:**
+  - VITE_API_URL (frontend)
+  - DATABASE_URL (backend)
+  - JWT_SECRET (backend)
+  - MERCADOPAGO_ACCESS_TOKEN (backend)
+  - BTC_WALLET_ADDRESS (backend)
+  - ETH_WALLET_ADDRESS (backend)
+end note
+
+@enduml

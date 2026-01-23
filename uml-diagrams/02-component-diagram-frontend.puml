@@ -1,0 +1,187 @@
+@startuml
+title Diagrama de Componentes - Frontend (React SPA)
+
+!define COMPONENT_COLOR #B3E5FC
+!define SERVICE_COLOR #C8E6C9
+!define STORE_COLOR #F8BBD0
+!define PAGE_COLOR #FFF9C4
+
+package "Frontend Application" {
+    
+    package "Pages (Presentation Layer)" {
+        component [Home] PAGE_COLOR
+        component [Products] PAGE_COLOR
+        component [ProductDetail] PAGE_COLOR
+        component [Cart] PAGE_COLOR
+        component [Checkout] PAGE_COLOR
+        component [CryptoPayment] PAGE_COLOR
+        component [OrderSuccess] PAGE_COLOR
+        component [OrderFailure] PAGE_COLOR
+        component [OrderPending] PAGE_COLOR
+        component [Events] PAGE_COLOR
+        component [Experiments] PAGE_COLOR
+        component [Servicios] PAGE_COLOR
+        component [Actividades] PAGE_COLOR
+        component [Login] PAGE_COLOR
+        component [Register] PAGE_COLOR
+        component [AdminDashboard] PAGE_COLOR
+        component [AdminOrders] PAGE_COLOR
+        component [AdminProducts] PAGE_COLOR
+        component [AdminBanners] PAGE_COLOR
+        component [AdminEvents] PAGE_COLOR
+        component [AdminExperiments] PAGE_COLOR
+        component [AdminCustomPages] PAGE_COLOR
+    }
+    
+    package "Components (Reusable UI)" {
+        component [Header] COMPONENT_COLOR
+        component [Footer] COMPONENT_COLOR
+        component [HtmlContent] COMPONENT_COLOR
+        component [RichTextEditor] COMPONENT_COLOR
+    }
+    
+    package "Services (API Layer)" {
+        component [productService] SERVICE_COLOR
+        component [orderService] SERVICE_COLOR
+        component [cartService] SERVICE_COLOR
+        component [authService] SERVICE_COLOR
+        component [bannerService] SERVICE_COLOR
+        component [eventService] SERVICE_COLOR
+        component [experimentService] SERVICE_COLOR
+        component [categoryService] SERVICE_COLOR
+        component [companyInfoService] SERVICE_COLOR
+        component [customPageService] SERVICE_COLOR
+    }
+    
+    package "HTTP Client Layer" {
+        component [apiClient\n(Axios Instance)] SERVICE_COLOR
+        component [Request Interceptor] SERVICE_COLOR
+        component [Response Interceptor] SERVICE_COLOR
+    }
+    
+    package "State Management" {
+        component [useStore\n(Zustand)] STORE_COLOR {
+            [User State]
+            [Cart State]
+            [Language State]
+        }
+    }
+    
+    package "Routing" {
+        component [React Router] COMPONENT_COLOR
+        component [App.jsx\n(Root Component)] COMPONENT_COLOR
+    }
+    
+    package "Internationalization" {
+        component [i18next] COMPONENT_COLOR
+        component [EN Translations] COMPONENT_COLOR
+        component [ES Translations] COMPONENT_COLOR
+    }
+}
+
+cloud "Backend API" {
+    component [REST API Endpoints]
+}
+
+' Page to Service relationships
+[Home] --> [productService]
+[Home] --> [bannerService]
+[Home] --> [eventService]
+[Home] --> [experimentService]
+[Home] --> [categoryService]
+
+[Products] --> [productService]
+[Products] --> [categoryService]
+
+[ProductDetail] --> [productService]
+[ProductDetail] --> [cartService]
+
+[Cart] --> [cartService]
+
+[Checkout] --> [orderService]
+[Checkout] --> [cartService]
+
+[AdminOrders] --> [orderService]
+[AdminProducts] --> [productService]
+[AdminProducts] --> [categoryService]
+[AdminBanners] --> [bannerService]
+[AdminEvents] --> [eventService]
+[AdminExperiments] --> [experimentService]
+[AdminCustomPages] --> [customPageService]
+
+[Login] --> [authService]
+[Register] --> [authService]
+
+' Service to API Client relationships
+[productService] --> [apiClient\n(Axios Instance)]
+[orderService] --> [apiClient\n(Axios Instance)]
+[cartService] --> [apiClient\n(Axios Instance)]
+[authService] --> [apiClient\n(Axios Instance)]
+[bannerService] --> [apiClient\n(Axios Instance)]
+[eventService] --> [apiClient\n(Axios Instance)]
+[experimentService] --> [apiClient\n(Axios Instance)]
+[categoryService] --> [apiClient\n(Axios Instance)]
+[companyInfoService] --> [apiClient\n(Axios Instance)]
+[customPageService] --> [apiClient\n(Axios Instance)]
+
+' API Client to Interceptors
+[apiClient\n(Axios Instance)] --> [Request Interceptor]
+[apiClient\n(Axios Instance)] --> [Response Interceptor]
+
+' API Client to Backend
+[apiClient\n(Axios Instance)] --> [REST API Endpoints]
+
+' State Management relationships
+[Home] --> [useStore\n(Zustand)]
+[Products] --> [useStore\n(Zustand)]
+[Cart] --> [useStore\n(Zustand)]
+[Checkout] --> [useStore\n(Zustand)]
+[Header] --> [useStore\n(Zustand)]
+[Login] --> [useStore\n(Zustand)]
+
+[Request Interceptor] ..> [useStore\n(Zustand)] : reads token/language
+
+' Routing relationships
+[App.jsx\n(Root Component)] --> [React Router]
+[React Router] --> [Home]
+[React Router] --> [Products]
+[React Router] --> [Cart]
+[React Router] --> [Checkout]
+[React Router] --> [Login]
+[React Router] --> [AdminDashboard]
+
+' Layout components
+[App.jsx\n(Root Component)] --> [Header]
+[App.jsx\n(Root Component)] --> [Footer]
+
+' i18n relationships
+[Header] --> [i18next]
+[Products] --> [i18next]
+[Cart] --> [i18next]
+[Checkout] --> [i18next]
+
+[i18next] --> [EN Translations]
+[i18next] --> [ES Translations]
+
+note right of [useStore\n(Zustand)]
+  Global State:
+  - User authentication
+  - Shopping cart
+  - Language preference
+  Persisted in localStorage
+end note
+
+note right of [Request Interceptor]
+  Adds to every request:
+  - Authorization token
+  - Accept-Language header
+  - X-Session-Id header
+end note
+
+note right of [Response Interceptor]
+  Handles globally:
+  - 401 errors (redirect to login)
+  - Token expiration
+end note
+
+@enduml

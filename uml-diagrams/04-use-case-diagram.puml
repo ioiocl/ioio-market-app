@@ -1,0 +1,175 @@
+@startuml
+title Diagrama de Casos de Uso - Sistema IOIO
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Usuario\nAnónimo" as Guest
+actor "Usuario\nRegistrado" as User
+actor "Administrador" as Admin
+
+rectangle "Sistema IOIO E-Commerce" {
+    
+    package "Gestión de Productos" {
+        usecase "Ver Catálogo\nde Productos" as UC1
+        usecase "Buscar Productos\npor Categoría" as UC2
+        usecase "Ver Detalle\nde Producto" as UC3
+        usecase "Filtrar Productos" as UC4
+    }
+    
+    package "Carrito de Compras" {
+        usecase "Agregar Producto\nal Carrito" as UC5
+        usecase "Ver Carrito" as UC6
+        usecase "Modificar Cantidad\nen Carrito" as UC7
+        usecase "Eliminar Item\ndel Carrito" as UC8
+        usecase "Vaciar Carrito" as UC9
+    }
+    
+    package "Proceso de Compra" {
+        usecase "Realizar Checkout" as UC10
+        usecase "Ingresar Datos\nde Envío" as UC11
+        usecase "Seleccionar Método\nde Pago" as UC12
+        usecase "Pagar con\nMercadoPago" as UC13
+        usecase "Pagar con\nBitcoin" as UC14
+        usecase "Pagar con\nEthereum" as UC15
+        usecase "Ver Estado\nde Orden" as UC16
+        usecase "Ver Historial\nde Órdenes" as UC17
+    }
+    
+    package "Autenticación" {
+        usecase "Registrarse" as UC18
+        usecase "Iniciar Sesión" as UC19
+        usecase "Cerrar Sesión" as UC20
+        usecase "Recuperar\nContraseña" as UC21
+    }
+    
+    package "Administración de Productos" {
+        usecase "Crear Producto" as UC22
+        usecase "Editar Producto" as UC23
+        usecase "Eliminar Producto" as UC24
+        usecase "Gestionar Stock" as UC25
+        usecase "Gestionar Categorías" as UC26
+        usecase "Subir Imágenes\nde Productos" as UC27
+    }
+    
+    package "Administración de Órdenes" {
+        usecase "Ver Todas\nlas Órdenes" as UC28
+        usecase "Aprobar Orden" as UC29
+        usecase "Rechazar Orden" as UC30
+        usecase "Actualizar Estado\nde Orden" as UC31
+        usecase "Ver Detalles\nde Pago" as UC32
+    }
+    
+    package "Gestión de Contenido" {
+        usecase "Gestionar Banners" as UC33
+        usecase "Gestionar Eventos" as UC34
+        usecase "Gestionar\nExperimentos" as UC35
+        usecase "Gestionar Páginas\nPersonalizadas" as UC36
+        usecase "Ver Eventos" as UC37
+        usecase "Ver Experimentos" as UC38
+    }
+    
+    package "Información y Contacto" {
+        usecase "Ver Servicios" as UC39
+        usecase "Ver Actividades" as UC40
+        usecase "Ver Información\nde Empresa" as UC41
+        usecase "Contactar" as UC42
+        usecase "Cambiar Idioma\n(EN/ES)" as UC43
+    }
+}
+
+' Usuario Anónimo (Guest)
+Guest --> UC1
+Guest --> UC2
+Guest --> UC3
+Guest --> UC4
+Guest --> UC5
+Guest --> UC6
+Guest --> UC18
+Guest --> UC19
+Guest --> UC37
+Guest --> UC38
+Guest --> UC39
+Guest --> UC40
+Guest --> UC41
+Guest --> UC42
+Guest --> UC43
+
+' Usuario Registrado (hereda de Guest)
+User --|> Guest
+
+' Funcionalidades adicionales de Usuario Registrado
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC16
+User --> UC17
+User --> UC20
+
+' Administrador (hereda de User)
+Admin --|> User
+
+' Funcionalidades exclusivas de Administrador
+Admin --> UC22
+Admin --> UC23
+Admin --> UC24
+Admin --> UC25
+Admin --> UC26
+Admin --> UC27
+Admin --> UC28
+Admin --> UC29
+Admin --> UC30
+Admin --> UC31
+Admin --> UC32
+Admin --> UC33
+Admin --> UC34
+Admin --> UC35
+Admin --> UC36
+
+' Relaciones entre casos de uso
+UC10 ..> UC11 : <<include>>
+UC10 ..> UC12 : <<include>>
+
+UC12 ..> UC13 : <<extend>>
+UC12 ..> UC14 : <<extend>>
+UC12 ..> UC15 : <<extend>>
+
+UC10 ..> UC19 : <<precondition>>
+
+UC5 ..> UC3 : <<extend>>
+
+UC22 ..> UC27 : <<include>>
+UC23 ..> UC27 : <<include>>
+
+UC29 ..> UC28 : <<extend>>
+UC30 ..> UC28 : <<extend>>
+
+note right of UC10
+  Requiere autenticación.
+  Usuario anónimo será
+  redirigido a login.
+end note
+
+note right of UC13
+  Redirige a pasarela
+  de pago externa
+  (MercadoPago)
+end note
+
+note right of UC14
+  Genera QR code y
+  wallet address para
+  pago con Bitcoin
+end note
+
+note bottom of Admin
+  El administrador tiene
+  acceso completo a todas
+  las funcionalidades del
+  sistema, incluyendo
+  gestión de contenido
+  y órdenes.
+end note
+
+@enduml

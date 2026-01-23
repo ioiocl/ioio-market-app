@@ -1,0 +1,126 @@
+@startuml
+title Diagrama de Actividad - Gestión de Órdenes por Administrador
+
+|Administrador|
+start
+
+:Acceder a panel de administración;
+:Navegar a /admin/orders;
+
+|Sistema|
+:Cargar lista de órdenes;
+:orderService.getAll();
+
+|Backend|
+:Ejecutar query a base de datos;
+:SELECT * FROM orders;
+:Incluir items de cada orden;
+
+|Sistema|
+:Renderizar tabla de órdenes;
+:Mostrar: orderNumber, date, total,\npaymentMethod, status, paymentStatus;
+
+|Administrador|
+:Revisar órdenes pendientes;
+
+if (¿Orden requiere acción?) then (Sí)
+    
+    if (¿Aprobar orden?) then (Sí)
+        :Click botón "Aprobar";
+        
+        |Sistema|
+        :Mostrar confirmación;
+        note right
+            "¿Estás seguro de cambiar
+            el estado a 'approved'?"
+        end note
+        
+        |Administrador|
+        if (¿Confirmar?) then (Sí)
+            
+            |Sistema|
+            :orderService.updateStatus(orderId, 'approved');
+            
+            |Backend|
+            :Validar permisos de admin;
+            :UPDATE orders\nSET status = 'approved'\nWHERE id = ?;
+            :Retornar orden actualizada;
+            
+            |Sistema|
+            :Actualizar estado local;
+            :setOrders(orders.map(...));
+            :Mostrar mensaje de éxito;
+            
+        else (No)
+            :Cancelar acción;
+        endif
+        
+    else (No - Rechazar)
+        :Click botón "Rechazar";
+        
+        |Sistema|
+        :Mostrar confirmación;
+        
+        |Administrador|
+        if (¿Confirmar?) then (Sí)
+            
+            |Sistema|
+            :orderService.updateStatus(orderId, 'rejected');
+            
+            |Backend|
+            :Validar permisos de admin;
+            :UPDATE orders\nSET status = 'rejected'\nWHERE id = ?;
+            
+            note right
+                Opcionalmente:
+                - Devolver stock
+                - Notificar al cliente
+                - Reembolsar pago
+            end note
+            
+            :Retornar orden actualizada;
+            
+            |Sistema|
+            :Actualizar estado local;
+            :Mostrar mensaje de éxito;
+            
+        else (No)
+            :Cancelar acción;
+        endif
+    endif
+    
+else (No)
+    :Continuar revisando;
+endif
+
+|Administrador|
+if (¿Revisar más órdenes?) then (Sí)
+    :Scroll en la tabla;
+    :Revisar siguiente orden;
+    detach
+else (No)
+    :Salir del panel de órdenes;
+    stop
+endif
+
+note right of "Cargar lista de órdenes"
+    **Datos mostrados:**
+    - Order Number (IOIO-timestamp-uuid)
+    - Fecha de creación
+    - Total ($)
+    - Método de pago (mercadopago/btc/eth)
+    - Estado (pending/approved/rejected)
+    - Estado de pago (pending/paid)
+end note
+
+note left of "Validar permisos de admin"
+    **Middleware de autorización:**
+    - authMiddleware: Verifica JWT
+    - adminMiddleware: Verifica role === 'admin'
+    
+    Si no es admin:
+    - HTTP 403 Forbidden
+    - "Admin access required"
+end note
+
+@enduml

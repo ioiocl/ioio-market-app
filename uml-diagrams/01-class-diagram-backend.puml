@@ -1,0 +1,262 @@
+@startuml
+title Diagrama de Clases - Backend (Arquitectura Hexagonal)
+
+!define ENTITY_COLOR #E1F5FE
+!define USECASE_COLOR #FFF9C4
+!define REPOSITORY_COLOR #F3E5F5
+!define CONTROLLER_COLOR #E8F5E9
+!define SERVICE_COLOR #FFE0B2
+
+package "Domain Layer" {
+    class Order <<Entity>> ENTITY_COLOR {
+        - id: string
+        - userId: string
+        - orderNumber: string
+        - status: string
+        - subtotal: number
+        - tax: number
+        - shipping: number
+        - total: number
+        - paymentMethod: string
+        - paymentStatus: string
+        - paymentDetails: object
+        - shippingAddress: object
+        - items: OrderItem[]
+        - createdAt: Date
+        - updatedAt: Date
+        + isPaid(): boolean
+        + canBeCancelled(): boolean
+        + markAsPaid(): void
+        + cancel(): void
+        + toJSON(): object
+    }
+    
+    class Product <<Entity>> ENTITY_COLOR {
+        - id: string
+        - nameEn: string
+        - nameEs: string
+        - descriptionEn: string
+        - descriptionEs: string
+        - price: number
+        - stock: number
+        - categoryId: string
+        - imageUrl: string
+        + hasStock(quantity): boolean
+        + toJSON(): object
+    }
+    
+    class User <<Entity>> ENTITY_COLOR {
+        - id: string
+        - email: string
+        - password: string
+        - firstName: string
+        - lastName: string
+        - role: string
+        + isAdmin(): boolean
+        + toJSON(): object
+    }
+    
+    class Cart <<Entity>> ENTITY_COLOR {
+        - id: string
+        - userId: string
+        - sessionId: string
+        - items: CartItem[]
+        - total: number
+        + addItem(item): void
+        + removeItem(itemId): void
+        + clear(): void
+    }
+    
+    interface OrderRepository <<Port>> {
+        + findById(id): Order
+        + findByUserId(userId): Order[]
+        + findAll(filters): Order[]
+        + create(orderData): Order
+        + update(id, orderData): Order
+        + updateStatus(id, status): Order
+        + updatePaymentStatus(id, status, details): Order
+        + updatePaymentDetails(id, details): Order
+    }
+    
+    interface ProductRepository <<Port>> {
+        + findById(id): Product
+        + findAll(filters): Product[]
+        + create(data): Product
+        + update(id, data): Product
+        + delete(id): void
+        + updateStock(id, quantity): void
+    }
+    
+    interface UserRepository <<Port>> {
+        + findById(id): User
+        + findByEmail(email): User
+        + create(userData): User
+        + update(id, userData): User
+    }
+    
+    interface CartRepository <<Port>> {
+        + findByUserId(userId): CartItem[]
+        + findBySessionId(sessionId): CartItem[]
+        + addItem(userId, sessionId, item): CartItem
+        + updateQuantity(id, quantity): CartItem
+        + removeItem(id): void
+        + clearByUserId(userId): void
+        + migrateSessionToUser(sessionId, userId): void
+    }
+}
+
+package "Application Layer" {
+    class CreateOrderUseCase <<UseCase>> USECASE_COLOR {
+        - orderRepository: OrderRepository
+        - productRepository: ProductRepository
+        - cartRepository: CartRepository
+        + execute(userId, orderData): Order
+    }
+    
+    class GetOrdersUseCase <<UseCase>> USECASE_COLOR {
+        - orderRepository: OrderRepository
+        + execute(filters): Order[]
+    }
+    
+    class UpdateOrderStatusUseCase <<UseCase>> USECASE_COLOR {
+        - orderRepository: OrderRepository
+        + execute(orderId, status): Order
+    }
+}
+
+package "Infrastructure Layer" {
+    class PostgresOrderRepository <<Adapter>> REPOSITORY_COLOR {
+        - pool: PostgresPool
+        + findById(id): Order
+        + findByUserId(userId): Order[]
+        + findAll(filters): Order[]
+        + create(orderData): Order
+        + update(id, orderData): Order
+        + updateStatus(id, status): Order
+        + updatePaymentStatus(id, status, details): Order
+        - _mapToEntity(row, items): Order
+    }
+    
+    class PostgresProductRepository <<Adapter>> REPOSITORY_COLOR {
+        - pool: PostgresPool
+        + findById(id): Product
+        + findAll(filters): Product[]
+        + create(data): Product
+        + update(id, data): Product
+        + delete(id): void
+        + updateStock(id, quantity): void
+        - _mapToEntity(row): Product
+    }
+    
+    class PostgresUserRepository <<Adapter>> REPOSITORY_COLOR {
+        - pool: PostgresPool
+        + findById(id): User
+        + findByEmail(email): User
+        + create(userData): User
+        + update(id, userData): User
+        - _mapToEntity(row): User
+    }
+    
+    class PostgresCartRepository <<Adapter>> REPOSITORY_COLOR {
+        - pool: PostgresPool
+        + findByUserId(userId): CartItem[]
+        + addItem(userId, sessionId, item): CartItem
+        + removeItem(id): void
+        + clearByUserId(userId): void
+        + migrateSessionToUser(sessionId, userId): void
+    }
+    
+    class OrderController <<Controller>> CONTROLLER_COLOR {
+        - createOrderUseCase: CreateOrderUseCase
+        - orderRepository: OrderRepository
+        - mercadoPagoService: MercadoPagoService
+        - bitcoinService: BitcoinService
+        + create(req, res): void
+        + getMyOrders(req, res): void
+        + getById(req, res): void
+        + getAll(req, res): void
+        + updateStatus(req, res): void
+    }
+    
+    class ProductController <<Controller>> CONTROLLER_COLOR {
+        - productRepository: ProductRepository
+        + getAll(req, res): void
+        + getById(req, res): void
+        + create(req, res): void
+        + update(req, res): void
+        + delete(req, res): void
+    }
+    
+    class AuthController <<Controller>> CONTROLLER_COLOR {
+        - userRepository: UserRepository
+        + login(req, res): void
+        + register(req, res): void
+        + me(req, res): void
+    }
+    
+    class CartController <<Controller>> CONTROLLER_COLOR {
+        - cartRepository: CartRepository
+        + get(req, res): void
+        + addItem(req, res): void
+        + updateQuantity(req, res): void
+        + removeItem(req, res): void
+        + clear(req, res): void
+    }
+    
+    class MercadoPagoService <<Service>> SERVICE_COLOR {
+        - client: MercadoPagoConfig
+        - preferenceClient: Preference
+        - paymentClient: Payment
+        + createPaymentPreference(order): object
+        + getPaymentInfo(paymentId): object
+        + processWebhookNotification(data): object
+    }
+    
+    class BitcoinService <<Service>> SERVICE_COLOR {
+        + createPaymentInstructions(order, currency): object
+        + isConfigured(currency): boolean
+    }
+    
+    class AuthMiddleware <<Middleware>> {
+        + authMiddleware(req, res, next): void
+        + adminMiddleware(req, res, next): void
+        + optionalAuthMiddleware(req, res, next): void
+    }
+}
+
+' Relationships - Ports and Adapters
+OrderRepository <|.. PostgresOrderRepository : implements
+ProductRepository <|.. PostgresProductRepository : implements
+UserRepository <|.. PostgresUserRepository : implements
+CartRepository <|.. PostgresCartRepository : implements
+
+' Use Cases Dependencies
+CreateOrderUseCase --> OrderRepository : uses
+CreateOrderUseCase --> ProductRepository : uses
+CreateOrderUseCase --> CartRepository : uses
+CreateOrderUseCase ..> Order : creates
+
+GetOrdersUseCase --> OrderRepository : uses
+UpdateOrderStatusUseCase --> OrderRepository : uses
+
+' Controllers Dependencies
+OrderController --> CreateOrderUseCase : uses
+OrderController --> OrderRepository : uses
+OrderController --> MercadoPagoService : uses
+OrderController --> BitcoinService : uses
+
+ProductController --> ProductRepository : uses
+AuthController --> UserRepository : uses
+CartController --> CartRepository : uses
+
+' Repository to Entity
+PostgresOrderRepository ..> Order : creates
+PostgresProductRepository ..> Product : creates
+PostgresUserRepository ..> User : creates
+
+' Entity Relationships
+Order "1" *-- "many" OrderItem
+Cart "1" *-- "many" CartItem
+Product "1" -- "many" OrderItem
+
+@enduml
