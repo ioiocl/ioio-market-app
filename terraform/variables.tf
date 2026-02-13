@@ -56,3 +56,15 @@ variable "mercadopago_secret_key" {
   type        = string
   default     = "MERCADOPAGO-SECRET"
 }
+
+variable "btc_wallet_address" {
+  description = "Bitcoin wallet address for receiving payments"
+  type        = string
+  default     = ""
+}
+
+variable "eth_wallet_address" {
+  description = "Ethereum wallet address for receiving payments"
+  type        = string
+  default     = ""
+}

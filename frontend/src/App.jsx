@@ -21,6 +21,7 @@ import AdminProducts from './pages/Admin/Products';
 import AdminOrders from './pages/Admin/Orders';
 import AdminEvents from './pages/Admin/Events';
 import AdminExperiments from './pages/Admin/Experiments';
+import AdminActivities from './pages/Admin/Activities';
 import AdminBanners from './pages/Admin/Banners';
 import AdminCustomPages from './pages/Admin/CustomPages';
 import OrderSuccess from './pages/OrderSuccess';
@@ -64,6 +65,7 @@ function App() {
             <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="/admin/events" element={<AdminEvents />} />
             <Route path="/admin/experiments" element={<AdminExperiments />} />
+            <Route path="/admin/activities" element={<AdminActivities />} />
             <Route path="/admin/banners" element={<AdminBanners />} />
             <Route path="/admin/pages" element={<AdminCustomPages />} />
           </Routes>

@@ -69,6 +69,15 @@ export const experimentService = {
   delete: (id) => apiClient.delete(`/experiments/${id}`),
 };
 
+// Activity Services
+export const activityService = {
+  getAll: (params) => apiClient.get('/activities', { params }),
+  getById: (id) => apiClient.get(`/activities/${id}`),
+  create: (activityData) => apiClient.post('/activities', activityData),
+  update: (id, activityData) => apiClient.put(`/activities/${id}`, activityData),
+  delete: (id) => apiClient.delete(`/activities/${id}`),
+};
+
 // Company Info Services
 export const companyInfoService = {
   get: () => apiClient.get('/company-info'),

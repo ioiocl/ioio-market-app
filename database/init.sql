@@ -89,6 +89,22 @@ CREATE TABLE experiments (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Activities table
+CREATE TABLE activities (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title_en VARCHAR(255) NOT NULL,
+    title_es VARCHAR(255) NOT NULL,
+    description_en TEXT,
+    description_es TEXT,
+    content_en TEXT,
+    content_es TEXT,
+    image_url VARCHAR(500),
+    images JSONB DEFAULT '[]',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Orders table
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -169,6 +185,8 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_order_items_order ON order_items(order_id);
 CREATE INDEX idx_cart_user ON cart_items(user_id);
 CREATE INDEX idx_cart_session ON cart_items(session_id);
+CREATE INDEX idx_activities_active ON activities(is_active);
+CREATE INDEX idx_activities_created_at ON activities(created_at DESC);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -196,6 +214,9 @@ CREATE TRIGGER update_events_updated_at BEFORE UPDATE ON events
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_experiments_updated_at BEFORE UPDATE ON experiments
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_activities_updated_at BEFORE UPDATE ON activities
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders

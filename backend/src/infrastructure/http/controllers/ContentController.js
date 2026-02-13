@@ -1,10 +1,11 @@
 // Controller for Banners, Events, Experiments, and Company Info
 class ContentController {
-  constructor(bannerRepository, eventRepository, experimentRepository, companyInfoRepository) {
+  constructor(bannerRepository, eventRepository, experimentRepository, companyInfoRepository, activityRepository) {
     this.bannerRepository = bannerRepository;
     this.eventRepository = eventRepository;
     this.experimentRepository = experimentRepository;
     this.companyInfoRepository = companyInfoRepository;
+    this.activityRepository = activityRepository;
   }
 
   // Banners
@@ -206,6 +207,83 @@ class ContentController {
     try {
       const { id } = req.params;
       await this.experimentRepository.delete(id);
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  // Activities
+  async getActivities(req, res) {
+    try {
+      const language = req.headers['accept-language']?.startsWith('es') ? 'es' : 'en';
+      const activeOnly = req.query.active !== 'false';
+      const activities = await this.activityRepository.findAll(activeOnly);
+      
+      const activitiesJSON = activities.map(activity => ({
+        id: activity.id,
+        title: language === 'es' ? activity.title_es : activity.title_en,
+        description: language === 'es' ? activity.description_es : activity.description_en,
+        content: language === 'es' ? activity.content_es : activity.content_en,
+        imageUrl: activity.image_url,
+        images: activity.images,
+        isActive: activity.is_active
+      }));
+
+      res.json({ activities: activitiesJSON });
+    } catch (error) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  async getActivityById(req, res) {
+    try {
+      const { id } = req.params;
+      const language = req.headers['accept-language']?.startsWith('es') ? 'es' : 'en';
+      const activity = await this.activityRepository.findById(id);
+
+      if (!activity) {
+        return res.status(404).json({ error: { message: 'Activity not found' } });
+      }
+
+      res.json({
+        activity: {
+          id: activity.id,
+          title: language === 'es' ? activity.title_es : activity.title_en,
+          description: language === 'es' ? activity.description_es : activity.description_en,
+          content: language === 'es' ? activity.content_es : activity.content_en,
+          imageUrl: activity.image_url,
+          images: activity.images
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: { message: error.message } });
+    }
+  }
+
+  async createActivity(req, res) {
+    try {
+      const activity = await this.activityRepository.create(req.body);
+      res.status(201).json({ activity });
+    } catch (error) {
+      res.status(400).json({ error: { message: error.message } });
+    }
+  }
+
+  async updateActivity(req, res) {
+    try {
+      const { id } = req.params;
+      const activity = await this.activityRepository.update(id, req.body);
+      res.json({ activity });
+    } catch (error) {
+      res.status(400).json({ error: { message: error.message } });
+    }
+  }
+
+  async deleteActivity(req, res) {
+    try {
+      const { id } = req.params;
+      await this.activityRepository.delete(id);
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: { message: error.message } });

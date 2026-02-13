@@ -10,6 +10,7 @@ const PostgresCategoryRepository = require('../../repositories/PostgresCategoryR
 const PostgresBannerRepository = require('../../repositories/PostgresBannerRepository');
 const PostgresEventRepository = require('../../repositories/PostgresEventRepository');
 const PostgresExperimentRepository = require('../../repositories/PostgresExperimentRepository');
+const PostgresActivityRepository = require('../../repositories/PostgresActivityRepository');
 const PostgresCompanyInfoRepository = require('../../repositories/PostgresCompanyInfoRepository');
 const CustomPageRepository = require('../../repositories/CustomPageRepository');
 
@@ -36,6 +37,7 @@ function setupRoutes(app) {
   const bannerRepository = new PostgresBannerRepository();
   const eventRepository = new PostgresEventRepository();
   const experimentRepository = new PostgresExperimentRepository();
+  const activityRepository = new PostgresActivityRepository();
   const companyInfoRepository = new PostgresCompanyInfoRepository();
   const customPageRepository = new CustomPageRepository();
 
@@ -49,7 +51,8 @@ function setupRoutes(app) {
     bannerRepository,
     eventRepository,
     experimentRepository,
-    companyInfoRepository
+    companyInfoRepository,
+    activityRepository
   );
   const uploadController = new UploadController();
   const webhookController = new WebhookController(orderRepository);
@@ -124,6 +127,16 @@ function setupRoutes(app) {
     contentController.updateExperiment(req, res));
   router.delete('/experiments/:id', authMiddleware, adminMiddleware, (req, res) => 
     contentController.deleteExperiment(req, res));
+
+  // Activity routes
+  router.get('/activities', (req, res) => contentController.getActivities(req, res));
+  router.get('/activities/:id', (req, res) => contentController.getActivityById(req, res));
+  router.post('/activities', authMiddleware, adminMiddleware, (req, res) => 
+    contentController.createActivity(req, res));
+  router.put('/activities/:id', authMiddleware, adminMiddleware, (req, res) => 
+    contentController.updateActivity(req, res));
+  router.delete('/activities/:id', authMiddleware, adminMiddleware, (req, res) => 
+    contentController.deleteActivity(req, res));
 
   // Company info routes
   router.get('/company-info', (req, res) => contentController.getCompanyInfo(req, res));

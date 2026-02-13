@@ -1,0 +1,26 @@
+# GCP Project Configuration
+project_id  = "your-gcp-project-id"
+region      = "us-central1"
+zone        = "us-central1-a"
+
+# Database Configuration
+db_name     = "ioio_db"
+db_user     = "ioio_user"
+db_password = "your-secure-database-password-here"
+
+# JWT Secret (use a strong random string)
+jwt_secret  = "your-jwt-secret-key-here"
+
+# Google Cloud Storage
+gcs_bucket_name = "ioio-products"
+
+# Cryptocurrency Wallet Addresses
+# IMPORTANTE: Pon aquí tus direcciones de wallet para recibir pagos en Bitcoin y Ethereum
+# Ejemplo Bitcoin: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+# Ejemplo Ethereum: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
+btc_wallet_address = ""  # Tu dirección Bitcoin aquí
+eth_wallet_address = ""  # Tu dirección Ethereum aquí
+
+# MercadoPago Secret Manager (nombres de los secrets en GCP Secret Manager)
+mercadopago_secret_id  = "MERCADOPAGO-ID"
+mercadopago_secret_key = "MERCADOPAGO-SECRET"

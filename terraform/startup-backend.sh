@@ -41,6 +41,10 @@ GCS_BUCKET_NAME=${gcs_bucket_name}
 CORS_ORIGIN=https://ioio.cl,http://ioio.cl,https://www.ioio.cl,http://www.ioio.cl
 MERCADOPAGO_ACCESS_TOKEN=$MERCADOPAGO_SECRET
 MERCADOPAGO_PUBLIC_KEY=$MERCADOPAGO_CLIENT_ID
+BTC_WALLET_ADDRESS=${btc_wallet_address}
+ETH_WALLET_ADDRESS=${eth_wallet_address}
+FRONTEND_URL=https://ioio.cl
+BACKEND_URL=https://api.ioio.cl
 EOF
 
 # Build and run backend container

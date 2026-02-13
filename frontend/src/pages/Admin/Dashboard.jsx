@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Package, ShoppingBag, Users, Image, Calendar, Beaker, FileText } from 'lucide-react';
+import { Package, ShoppingBag, Users, Image, Calendar, Beaker, FileText, Activity } from 'lucide-react';
 
 function AdminDashboard() {
   const { t } = useTranslation();
@@ -11,6 +11,7 @@ function AdminDashboard() {
     { icon: Image, label: t('admin.banners'), path: '/admin/banners', color: 'cyber-yellow' },
     { icon: Calendar, label: t('admin.events'), path: '/admin/events', color: 'cyber-green' },
     { icon: Beaker, label: t('admin.experiments'), path: '/admin/experiments', color: 'cyber-purple' },
+    { icon: Activity, label: 'Actividades', path: '/admin/activities', color: 'cyber-pink' },
     { icon: FileText, label: 'Páginas Personalizadas', path: '/admin/pages', color: 'cyber-blue' },
   ];
 

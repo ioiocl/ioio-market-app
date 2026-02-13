@@ -44,6 +44,8 @@ resource "google_compute_instance" "backend" {
     project_id              = var.project_id
     mercadopago_secret_id   = var.mercadopago_secret_id
     mercadopago_secret_key  = var.mercadopago_secret_key
+    btc_wallet_address      = var.btc_wallet_address
+    eth_wallet_address      = var.eth_wallet_address
   })
 
   tags = ["http-server", "https-server"]
