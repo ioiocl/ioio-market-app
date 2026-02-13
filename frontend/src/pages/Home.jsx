@@ -197,8 +197,8 @@ function Home() {
         </section>
       )}
 
-      {/* Shop Section (Merchandising + Clothes) */}
-      {shopProducts.length > 0 && (
+      {/* Shop Section (Merchandising + Clothes) - HIDDEN: Only accessible from menu */}
+      {/* {shopProducts.length > 0 && (
         <section className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-cyber-blue">Shop</h2>
@@ -252,7 +252,7 @@ function Home() {
             ))}
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Products by Category */}
       {categories.map((category) => {
