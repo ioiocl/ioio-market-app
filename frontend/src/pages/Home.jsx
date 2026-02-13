@@ -130,7 +130,7 @@ function Home() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-cyber-black via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-center">
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-center z-20">
                 <h2 className="text-4xl md:text-6xl font-bold mb-4 neon-text">
                   {banner.title}
                 </h2>
@@ -141,14 +141,14 @@ function Home() {
                         href={banner.ctaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50"
+                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50 cursor-pointer relative z-30"
                       >
                         {banner.ctaText}
                       </a>
                     ) : (
                       <Link
                         to={banner.ctaUrl}
-                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50"
+                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50 cursor-pointer relative z-30"
                       >
                         {banner.ctaText}
                       </Link>
