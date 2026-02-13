@@ -14,7 +14,10 @@ function AdminBanners() {
     linkUrl: '',
     displayOrder: 0,
     imageUrl: '',
-    isActive: true
+    isActive: true,
+    ctaTextEs: '',
+    ctaUrl: '',
+    showCta: false
   });
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -41,7 +44,10 @@ function AdminBanners() {
       linkUrl: banner.link_url || banner.linkUrl || '',
       displayOrder: banner.display_order || banner.displayOrder || 0,
       imageUrl: banner.image_url || banner.imageUrl || '',
-      isActive: banner.is_active !== false
+      isActive: banner.is_active !== false,
+      ctaTextEs: banner.cta_text_es || banner.ctaText || '',
+      ctaUrl: banner.cta_url || banner.ctaUrl || '',
+      showCta: banner.show_cta || banner.showCta || false
     });
     setImagePreview(banner.image_url || banner.imageUrl || null);
     setShowModal(true);
@@ -51,7 +57,8 @@ function AdminBanners() {
     try {
       const dataToSend = {
         ...formData,
-        titleEn: formData.titleEs
+        titleEn: formData.titleEs,
+        ctaTextEn: formData.ctaTextEs
       };
       
       if (editingBanner) {
@@ -87,7 +94,10 @@ function AdminBanners() {
       linkUrl: '',
       displayOrder: banners.length + 1,
       imageUrl: '',
-      isActive: true
+      isActive: true,
+      ctaTextEs: '',
+      ctaUrl: '',
+      showCta: false
     });
     setImagePreview(null);
     setShowModal(true);
@@ -210,6 +220,50 @@ function AdminBanners() {
                     onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
                     className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
                   />
+                </div>
+
+                {/* CTA Section */}
+                <div className="border-t border-cyber-gray pt-4 mt-4">
+                  <h3 className="text-lg font-bold mb-4 text-cyber-blue">Call-to-Action (Botón)</h3>
+                  
+                  <div className="flex items-center mb-4">
+                    <input
+                      type="checkbox"
+                      checked={formData.showCta}
+                      onChange={(e) => setFormData({ ...formData, showCta: e.target.checked })}
+                      className="mr-2"
+                    />
+                    <label className="text-sm font-semibold">Mostrar botón de acción</label>
+                  </div>
+
+                  {formData.showCta && (
+                    <>
+                      <div className="mb-4">
+                        <label className="block text-sm font-semibold mb-2">Texto del Botón</label>
+                        <input
+                          type="text"
+                          value={formData.ctaTextEs}
+                          onChange={(e) => setFormData({ ...formData, ctaTextEs: e.target.value })}
+                          placeholder="Ej: Comprar Ahora, Ver Más, Explorar"
+                          className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold mb-2">URL de Acción</label>
+                        <input
+                          type="text"
+                          value={formData.ctaUrl}
+                          onChange={(e) => setFormData({ ...formData, ctaUrl: e.target.value })}
+                          placeholder="/products, /events, https://..."
+                          className="w-full px-4 py-2 bg-cyber-gray border border-cyber-blue rounded focus:outline-none focus:border-cyber-pink"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Puede ser una ruta interna (/products) o URL externa (https://...)
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div>

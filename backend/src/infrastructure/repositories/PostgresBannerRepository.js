@@ -22,11 +22,13 @@ class PostgresBannerRepository {
 
   async create(bannerData) {
     const result = await pool.query(
-      `INSERT INTO banners (title_en, title_es, image_url, link_url, display_order, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO banners (title_en, title_es, image_url, link_url, display_order, is_active, 
+                           cta_text_en, cta_text_es, cta_url, show_cta)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING *`,
       [bannerData.titleEn, bannerData.titleEs, bannerData.imageUrl, 
-       bannerData.linkUrl, bannerData.displayOrder || 0, bannerData.isActive !== false]
+       bannerData.linkUrl, bannerData.displayOrder || 0, bannerData.isActive !== false,
+       bannerData.ctaTextEn, bannerData.ctaTextEs, bannerData.ctaUrl, bannerData.showCta || false]
     );
     return result.rows[0];
   }
@@ -59,6 +61,22 @@ class PostgresBannerRepository {
     if (bannerData.isActive !== undefined) {
       fields.push(`is_active = $${paramCount++}`);
       values.push(bannerData.isActive);
+    }
+    if (bannerData.ctaTextEn !== undefined) {
+      fields.push(`cta_text_en = $${paramCount++}`);
+      values.push(bannerData.ctaTextEn);
+    }
+    if (bannerData.ctaTextEs !== undefined) {
+      fields.push(`cta_text_es = $${paramCount++}`);
+      values.push(bannerData.ctaTextEs);
+    }
+    if (bannerData.ctaUrl !== undefined) {
+      fields.push(`cta_url = $${paramCount++}`);
+      values.push(bannerData.ctaUrl);
+    }
+    if (bannerData.showCta !== undefined) {
+      fields.push(`show_cta = $${paramCount++}`);
+      values.push(bannerData.showCta);
     }
 
     values.push(id);

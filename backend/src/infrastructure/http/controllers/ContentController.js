@@ -21,7 +21,10 @@ class ContentController {
         imageUrl: banner.image_url,
         linkUrl: banner.link_url,
         displayOrder: banner.display_order,
-        isActive: banner.is_active
+        isActive: banner.is_active,
+        ctaText: language === 'es' ? banner.cta_text_es : banner.cta_text_en,
+        ctaUrl: banner.cta_url,
+        showCta: banner.show_cta
       }));
 
       res.json({ banners: bannersJSON });

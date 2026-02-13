@@ -134,16 +134,26 @@ function Home() {
                 <h2 className="text-4xl md:text-6xl font-bold mb-4 neon-text">
                   {banner.title}
                 </h2>
-                <p className="text-xl md:text-2xl text-gray-300 mb-6">
-                  {banner.description}
-                </p>
-                {banner.link && (
-                  <Link
-                    to={banner.link}
-                    className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors"
-                  >
-                    {t('home.shopNow')}
-                  </Link>
+                {banner.showCta && banner.ctaText && banner.ctaUrl && (
+                  <>
+                    {banner.ctaUrl.startsWith('http') ? (
+                      <a
+                        href={banner.ctaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50"
+                      >
+                        {banner.ctaText}
+                      </a>
+                    ) : (
+                      <Link
+                        to={banner.ctaUrl}
+                        className="inline-block px-8 py-3 bg-cyber-blue text-cyber-black font-bold rounded-lg hover:bg-cyber-pink transition-colors shadow-lg hover:shadow-cyber-blue/50"
+                      >
+                        {banner.ctaText}
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </div>
