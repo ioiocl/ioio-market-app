@@ -51,7 +51,7 @@ function Header() {
               Servicios
             </Link>
             <Link to="/actividades" className="hover:text-cyber-blue transition-colors">
-              Actividades
+              Talleres
             </Link>
             <Link to="/about" className="hover:text-cyber-blue transition-colors">
               {t('nav.about')}
@@ -179,7 +179,7 @@ function Header() {
                 className="hover:text-cyber-blue transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Actividades
+                Talleres
               </Link>
               <Link
                 to="/about"
