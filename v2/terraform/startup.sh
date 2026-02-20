@@ -61,12 +61,12 @@ docker run -d \
 # Build and run frontend
 echo "=== Building frontend ==="
 cd ../frontend
-docker build --build-arg VITE_API_URL=http://localhost:5000/api -t ioio-v2-frontend .
+docker build --build-arg VITE_API_URL=/api -t ioio-v2-frontend .
 docker run -d \
   --name ioio-v2-frontend \
   --restart unless-stopped \
   -p 3000:3000 \
-  -e VITE_API_URL=http://localhost:5000/api \
+  -e VITE_API_URL=/api \
   ioio-v2-frontend
 
 # Configure Nginx
