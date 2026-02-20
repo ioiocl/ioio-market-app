@@ -1,0 +1,52 @@
+{
+  "header": {
+    "title": "IOIO - Collaborative Workspace",
+    "nav": {
+      "home": "Home",
+      "events": "Events",
+      "activities": "Activities",
+      "shop": "Shop"
+    }
+  },
+  "slider": {
+    "cta": "Learn More"
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "date": "Date",
+    "location": "Location",
+    "register": "Register"
+  },
+  "activities": {
+    "title": "Activities",
+    "duration": "Duration",
+    "learnMore": "Learn More"
+  },
+  "shop": {
+    "title": "Shop",
+    "price": "Price",
+    "sku": "SKU",
+    "stock": "Stock",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "admin": "Admin"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "login": "Login",
+    "logout": "Logout",
+    "password": "Password",
+    "slider": "Manage Slider",
+    "events": "Manage Events",
+    "activities": "Manage Activities",
+    "products": "Manage Products",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

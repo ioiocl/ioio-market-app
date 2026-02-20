@@ -1,0 +1,52 @@
+{
+  "header": {
+    "title": "IOIO - Espacio de Trabajo Colaborativo",
+    "nav": {
+      "home": "Inicio",
+      "events": "Eventos",
+      "activities": "Actividades",
+      "shop": "Tienda"
+    }
+  },
+  "slider": {
+    "cta": "Más Información"
+  },
+  "events": {
+    "title": "Próximos Eventos",
+    "date": "Fecha",
+    "location": "Ubicación",
+    "register": "Inscribirse"
+  },
+  "activities": {
+    "title": "Actividades",
+    "duration": "Duración",
+    "learnMore": "Conocer Más"
+  },
+  "shop": {
+    "title": "Tienda",
+    "price": "Precio",
+    "sku": "SKU",
+    "stock": "Stock",
+    "addToCart": "Agregar al Carrito",
+    "outOfStock": "Agotado"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "admin": "Administrar"
+  },
+  "admin": {
+    "title": "Panel de Administración",
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "password": "Contraseña",
+    "slider": "Gestionar Slider",
+    "events": "Gestionar Eventos",
+    "activities": "Gestionar Actividades",
+    "products": "Gestionar Productos",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "add": "Agregar",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  }
+}
